@@ -12,19 +12,19 @@ var (
 	ErrInvalidIpv4Mask    = errors.New("invalid ip mask")
 )
 
-type IpTable struct {
+type IPTable struct {
 	maskList []*net.IPNet
 	ipList   []net.IP
 }
 
-func NewIpTable() *IpTable {
-	return &IpTable{}
+func NewIPTable() *IPTable {
+	return &IPTable{}
 }
 
-func (a *IpTable) Contains(clientIp string) (bool, error) {
-	ip := net.ParseIP(clientIp)
+func (a *IPTable) Contains(clientIP string) (bool, error) {
+	ip := net.ParseIP(clientIP)
 	if ip.To4() == nil {
-		return false, fmt.Errorf("%w:%s is not valid ipv4 address", ErrInvalidIpv4Address, clientIp)
+		return false, fmt.Errorf("%w:%s is not valid ipv4 address", ErrInvalidIpv4Address, clientIP)
 	}
 	for _, ipdb := range a.ipList {
 		if ipdb.Equal(ip) {
@@ -39,14 +39,14 @@ func (a *IpTable) Contains(clientIp string) (bool, error) {
 	return false, nil
 }
 
-func (a *IpTable) Add(ipOrMask string) error {
+func (a *IPTable) Add(ipOrMask string) error {
 	if strings.Contains(ipOrMask, "/") {
 		return a.addMask(ipOrMask)
 	}
-	return a.addIp(ipOrMask)
+	return a.addIP(ipOrMask)
 }
 
-func (a *IpTable) addMask(netmask string) error {
+func (a *IPTable) addMask(netmask string) error {
 	_, mask, err := net.ParseCIDR(netmask)
 	if err != nil {
 		return fmt.Errorf("%w: is not valid ipv4 mask %s,  %s", ErrInvalidIpv4Mask, netmask, err)
@@ -55,10 +55,10 @@ func (a *IpTable) addMask(netmask string) error {
 	return nil
 }
 
-func (a *IpTable) addIp(clientIp string) error {
-	ip := net.ParseIP(clientIp)
+func (a *IPTable) addIP(clientIP string) error {
+	ip := net.ParseIP(clientIP)
 	if ip.To4() == nil {
-		return fmt.Errorf("%w:%s is not valid ipv4 address", ErrInvalidIpv4Address, clientIp)
+		return fmt.Errorf("%w:%s is not valid ipv4 address", ErrInvalidIpv4Address, clientIP)
 	}
 	a.ipList = append(a.ipList, ip)
 

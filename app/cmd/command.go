@@ -2,14 +2,15 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 var RootCmd = &cobra.Command{
 	Use:   "antibruteforce",
 	Short: "antibruteforce",
-	Long: `Antibruteforce service cli`,
+	Long:  `Antibruteforce service cli`,
 }
 
 func Execute() {

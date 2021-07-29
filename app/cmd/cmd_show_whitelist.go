@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -9,7 +10,7 @@ var showWhitelistCmd = &cobra.Command{
 	Use:   "show-whitelist",
 	Short: "Show whitelist",
 	Long:  `Show service whitelist`,
-	Run: showWhitelistExecute,
+	Run:   showWhitelistExecute,
 }
 
 func init() {

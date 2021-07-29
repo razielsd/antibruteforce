@@ -17,7 +17,7 @@ func NewRateLimiter(ttl, rate uint) *RateLimiter {
 	return &RateLimiter{
 		ttl:   ttl,
 		rate:  rate,
-		items: make(map[string]*BucketHeader, 0),
+		items: make(map[string]*BucketHeader),
 		mu:    sync.RWMutex{},
 		GetTime: func() int64 {
 			return time.Now().Unix()

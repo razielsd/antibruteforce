@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewAllowFilter(t *testing.T) {
-	filter := NewIpTable()
+	filter := NewIPTable()
 	require.NotNil(t, filter)
 }
 
@@ -40,7 +40,7 @@ func TestIpTable_Contains_Found(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			iptable := NewIpTable()
+			iptable := NewIPTable()
 			for _, ip := range test.ips {
 				err := iptable.Add(ip)
 				require.NoError(t, err, "Unable add ip/mask for test data")
@@ -76,7 +76,7 @@ func TestIpTable_Contains_NotFound(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			iptable := NewIpTable()
+			iptable := NewIPTable()
 			for _, ip := range test.ips {
 				err := iptable.Add(ip)
 				require.NoError(t, err, "Unable add ip/mask for test data")
@@ -89,19 +89,19 @@ func TestIpTable_Contains_NotFound(t *testing.T) {
 }
 
 func TestIpTable_Contains_CheckInvalidIp(t *testing.T) {
-	iptable := NewIpTable()
+	iptable := NewIPTable()
 	_, err := iptable.Contains("192.168.1")
 	require.ErrorIs(t, err, ErrInvalidIpv4Address)
 }
 
 func TestIpTable_Add_InvalidIp(t *testing.T) {
-	iptable := NewIpTable()
+	iptable := NewIPTable()
 	err := iptable.Add("192.168.1.")
 	require.ErrorIs(t, err, ErrInvalidIpv4Address)
 }
 
 func TestIpTable_Add_InvalidMask(t *testing.T) {
-	iptable := NewIpTable()
+	iptable := NewIPTable()
 	err := iptable.Add("192.168.1./50")
 	require.ErrorIs(t, err, ErrInvalidIpv4Mask)
 }
