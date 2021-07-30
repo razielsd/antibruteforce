@@ -5,7 +5,7 @@ import (
 )
 
 type AppConfig struct {
-	Port          int      `envconfig:"default=8080"`
+	Addr          string   `envconfig:"default=0.0.0.0:8080"`
 	RateLogin     int      `envconfig:"default=10"`
 	RatePwd       int      `envconfig:"default=100"`
 	RateIP        int      `envconfig:"default=10000"`
@@ -13,6 +13,7 @@ type AppConfig struct {
 	WhitelistPath string   `envconfig:"optional"`
 	Blacklist     []string `envconfig:"optional"`
 	BlacklistPath string   `envconfig:"optional"`
+	LogLevel      string   `envconfig:"default=DEBUG"`
 }
 
 func GetConfig() (AppConfig, error) {

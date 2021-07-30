@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/razielsd/antibruteforce/app/api"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +16,7 @@ func init() {
 	RootCmd.AddCommand(serverCmd)
 }
 
-func serverExecute(cmd *cobra.Command, args []string) {
-	fmt.Println("server called")
+func serverExecute(command *cobra.Command, args []string) {
+	abf := api.NewAbfAPI(abfConfig, abfLogger)
+	abf.Run()
 }

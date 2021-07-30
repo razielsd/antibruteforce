@@ -11,7 +11,7 @@ import (
 
 func TestGetConfig(t *testing.T) {
 	testCfg := AppConfig{
-		Port:          8090,
+		Addr:          "127.0.0.1:9191",
 		RateLogin:     12,
 		RatePwd:       121,
 		RateIP:        10001,
@@ -19,8 +19,9 @@ func TestGetConfig(t *testing.T) {
 		Blacklist:     []string{"10.10.1.1", "10.10.1.72"},
 		WhitelistPath: "/tmp/whitelist.txt",
 		BlacklistPath: "/tmp/blacklist.txt",
+		LogLevel:      "WARN",
 	}
-	os.Setenv("ABF_PORT", strconv.Itoa(testCfg.Port))
+	os.Setenv("ABF_ADDR", testCfg.Addr)
 	os.Setenv("ABF_RATE_LOGIN", strconv.Itoa(testCfg.RateLogin))
 	os.Setenv("ABF_RATE_PWD", strconv.Itoa(testCfg.RatePwd))
 	os.Setenv("ABF_RATE_IP", strconv.Itoa(testCfg.RateIP))
@@ -28,6 +29,7 @@ func TestGetConfig(t *testing.T) {
 	os.Setenv("ABF_BLACKLIST", strings.Join(testCfg.Blacklist, ","))
 	os.Setenv("ABF_WHITELIST_PATH", testCfg.WhitelistPath)
 	os.Setenv("ABF_BLACKLIST_PATH", testCfg.BlacklistPath)
+	os.Setenv("ABF_LOG_LEVEL", testCfg.LogLevel)
 	cfg, err := GetConfig()
 	require.NoError(t, err)
 

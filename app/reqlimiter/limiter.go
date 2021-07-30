@@ -1,10 +1,13 @@
 package reqlimiter
 
 import (
-	"golang.org/x/time/rate"
 	"sync"
 	"time"
+
+	"golang.org/x/time/rate"
 )
+
+const limiterTTL = 60
 
 type ReqLimiter struct {
 	mu    sync.RWMutex
@@ -13,9 +16,9 @@ type ReqLimiter struct {
 	items map[string]*rate.Limiter
 }
 
-func NewReqLimiter(ttl time.Duration, reqRate int) *ReqLimiter {
+func NewReqLimiter(reqRate int) *ReqLimiter {
 	return &ReqLimiter{
-		ttl:   ttl,
+		ttl:   limiterTTL,
 		rate:  reqRate,
 		items: make(map[string]*rate.Limiter),
 		mu:    sync.RWMutex{},
