@@ -1,25 +1,14 @@
 run:
   tests: true
-  build-tags:
-    - bench
-    - !bench
 
 linters-settings:
   funlen:
     lines: 150
     statements: 80
-
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - errcheck
-        - dupl
-        - gocyclo
-        - gosec
+  gci:
+    local-prefixes: github.com/razielsd/antibruteforce
 
 linters:
-  disable-all: true
   enable:
     - asciicheck
     - bodyclose
@@ -37,28 +26,27 @@ linters:
     - gocyclo
     - godot
     - gofmt
-    - gofumpt
     - goheader
-    - goimports
     - revive
     - gomodguard
     - goprintffuncname
     - gosec
     - gosimple
     - govet
-    - ifshort
     - ineffassign
+    - govet
     - misspell
     - nestif
     - noctx
     - nolintlint
     - prealloc
-    - predeclared
     - rowserrcheck
+    - exportloopref
     - sqlclosecheck
     - staticcheck
     - structcheck
     - stylecheck
+    - tparallel
     - typecheck
     - unconvert
     - unparam

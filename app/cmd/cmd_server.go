@@ -1,8 +1,12 @@
 package cmd
 
 import (
-	"github.com/razielsd/antibruteforce/app/api"
+	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
+
+	"github.com/razielsd/antibruteforce/app/api"
 )
 
 var serverCmd = &cobra.Command{
@@ -17,6 +21,10 @@ func init() {
 }
 
 func serverExecute(command *cobra.Command, args []string) {
-	abf := api.NewAbfAPI(abfConfig, abfLogger)
+	abf, err := api.NewAbfAPI(abfConfig, abfLogger)
+	if err != nil {
+		fmt.Printf("Error starting service: %s\n", err)
+		os.Exit(1)
+	}
 	abf.Run()
 }

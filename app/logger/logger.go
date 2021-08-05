@@ -1,9 +1,10 @@
 package logger
 
 import (
-	"github.com/razielsd/antibruteforce/app/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/razielsd/antibruteforce/app/config"
 )
 
 func GetLogger(appCfg config.AppConfig) (*zap.Logger, error) {

@@ -3,8 +3,9 @@ package logger
 import (
 	"testing"
 
-	"github.com/razielsd/antibruteforce/app/config"
 	"github.com/stretchr/testify/require"
+
+	"github.com/razielsd/antibruteforce/app/config"
 )
 
 func TestLogger_ValidLogLevel_GetLogger(t *testing.T) {
