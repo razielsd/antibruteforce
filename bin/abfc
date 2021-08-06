@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# shellcheck disable=SC2068
+docker exec abf-container /app/abf $@

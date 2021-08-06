@@ -1,0 +1,33 @@
+name: Otus homework tests
+
+on:
+  push:
+    branches:
+      - *
+
+env:
+  GO111MODULE: "on"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: make lint
+        run: make lint
+        working-directory: hw12_13_14_15_calendar
+
+      - name: make build
+        run: make build
+        working-directory: hw12_13_14_15_calendar
+
+      - name: make test
+        run: make test
+        working-directory: hw12_13_14_15_calendar
