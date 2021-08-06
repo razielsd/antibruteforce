@@ -1,9 +1,11 @@
 package cli
 
 import (
-	"github.com/razielsd/antibruteforce/app/config"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/razielsd/antibruteforce/app/config"
 )
 
 func TestNewCli(t *testing.T) {
