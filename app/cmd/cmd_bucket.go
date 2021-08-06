@@ -51,21 +51,21 @@ func init() {
 }
 
 func dropBucketByLogin(cmd *cobra.Command, args []string) {
-	key := extractFirstArg(cmd, args, "Require login")
+	key := extractFirstArgOrDie(cmd, args, "Require login")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.DropBucketByLogin(key)
 	printCli(message, err)
 }
 
 func dropBucketByPwd(cmd *cobra.Command, args []string) {
-	key := extractFirstArg(cmd, args, "Require password")
+	key := extractFirstArgOrDie(cmd, args, "Require password")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.DropBucketByPwd(key)
 	printCli(message, err)
 }
 
 func dropBucketByIP(cmd *cobra.Command, args []string) {
-	key := extractFirstArg(cmd, args, "Require IP")
+	key := extractFirstArgOrDie(cmd, args, "Require IP")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.DropBucketByIP(key)
 	printCli(message, err)

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -33,7 +34,7 @@ func getConfigOrDie() abfconfig.AppConfig {
 	return abfConfig
 }
 
-func getLoggerorDie(cfg abfconfig.AppConfig) *zap.Logger {
+func getLoggerOrDie(cfg abfconfig.AppConfig) *zap.Logger {
 	abfLogger, err := logger.GetLogger(cfg)
 	if err != nil {
 		fmt.Printf("Unable init logger: %s\n", err)
@@ -42,13 +43,21 @@ func getLoggerorDie(cfg abfconfig.AppConfig) *zap.Logger {
 	return abfLogger
 }
 
-func extractFirstArg(cmd *cobra.Command, args []string, errMessage string) string {
+func extractFirstArg(args []string) (string, error) {
 	if len(args) < 1 {
+		return "", errors.New("empty args")
+	}
+	return args[0], nil
+}
+
+func extractFirstArgOrDie(cmd *cobra.Command, args []string, errMessage string) string {
+	param, err := extractFirstArg(args)
+	if err != nil {
 		fmt.Println(errMessage)
 		_ = cmd.Usage()
 		os.Exit(1)
 	}
-	return args[0]
+	return param
 }
 
 func printCli(data string, err error) {
