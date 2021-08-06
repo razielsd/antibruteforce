@@ -85,14 +85,14 @@ func showBlacklistExecute(cmd *cobra.Command, args []string) {
 }
 
 func addBlacklistExecute(cmd *cobra.Command, args []string) {
-	ip := extractFirstArg(cmd, args, "Require ip/mask")
+	ip := extractFirstArgOrDie(cmd, args, "Require ip/mask")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.AppendBlacklist(ip)
 	printCli(message, err)
 }
 
 func rmBlacklistExecute(cmd *cobra.Command, args []string) {
-	ip := extractFirstArg(cmd, args, "Require ip/mask")
+	ip := extractFirstArgOrDie(cmd, args, "Require ip/mask")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.RemoveBlacklist(ip)
 	printCli(message, err)
@@ -105,14 +105,14 @@ func showWhitelistExecute(cmd *cobra.Command, args []string) {
 }
 
 func addWhitelistExecute(cmd *cobra.Command, args []string) {
-	ip := extractFirstArg(cmd, args, "Require ip/mask")
+	ip := extractFirstArgOrDie(cmd, args, "Require ip/mask")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.AppendWhitelist(ip)
 	printCli(message, err)
 }
 
 func rmWhitelistExecute(cmd *cobra.Command, args []string) {
-	ip := extractFirstArg(cmd, args, "Require ip/mask")
+	ip := extractFirstArgOrDie(cmd, args, "Require ip/mask")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.RemoveWhitelist(ip)
 	printCli(message, err)

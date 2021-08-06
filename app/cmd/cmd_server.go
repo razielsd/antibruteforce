@@ -22,7 +22,7 @@ func init() {
 
 func serverExecute(command *cobra.Command, args []string) {
 	cfg := getConfigOrDie()
-	abfLogger := getLoggerorDie(cfg)
+	abfLogger := getLoggerOrDie(cfg)
 	abf, err := api.NewAbfAPI(cfg, abfLogger)
 	if err != nil {
 		fmt.Printf("Error starting service: %s\n", err)
