@@ -1,4 +1,5 @@
 # Сервис "Анти-брутфорс"
+[![codecov](https://codecov.io/gh/razielsd/antibruteforce/branch/master/graph/badge.svg)](https://codecov.io/gh/razielsd/antibruteforce)
 
 ## Общее описание
 Сервис предназначен для борьбы с подбором паролей при авторизации в какой-либо системе.
