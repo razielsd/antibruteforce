@@ -17,31 +17,29 @@ var RootCmd = &cobra.Command{
 	Long:  `Antibruteforce service cli`,
 }
 
-var (
-	abfLogger *zap.Logger
-	abfConfig abfconfig.AppConfig
-)
-
 func Execute() {
-	initEnv()
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
-func initEnv() {
-	var err error
-	abfConfig, err = abfconfig.GetConfig()
+func getConfigOrDie() abfconfig.AppConfig {
+	abfConfig, err := abfconfig.GetConfig()
 	if err != nil {
-		fmt.Printf("Unable get config: %s\n", err)
+		fmt.Printf("Unable load config: %s\n", err)
 		os.Exit(1)
 	}
-	abfLogger, err = logger.GetLogger(abfConfig)
+	return abfConfig
+}
+
+func getLoggerorDie(cfg abfconfig.AppConfig) *zap.Logger {
+	abfLogger, err := logger.GetLogger(cfg)
 	if err != nil {
 		fmt.Printf("Unable init logger: %s\n", err)
 		os.Exit(1)
 	}
+	return abfLogger
 }
 
 func extractFirstArg(cmd *cobra.Command, args []string, errMessage string) string {

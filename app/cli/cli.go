@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"fmt"
 	"text/tabwriter"
+
+	"github.com/razielsd/antibruteforce/app/config"
 )
 
 type Cli struct {
 	client *clientAPI
 }
 
-func NewCli() *Cli {
+func NewCli(cfg config.AppConfig) *Cli {
 	return &Cli{
-		client: newClientAPI("0.0.0.0:19187"),
+		client: newClientAPI(cfg.Addr),
 	}
 }
 

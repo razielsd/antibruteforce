@@ -1,6 +1,7 @@
 BIN := "./bin/abf"
 DOCKER_IMG?="abf:develop"
 ABF_PORT?=19187
+CONTAINER_NAME="abf-container"
 
 GIT_HASH := $(shell git log --format="%h" -n 1)
 LDFLAGS := -X 'github.com/razielsd/antibruteforce/app/cmd.version=develop' -X 'github.com/razielsd/antibruteforce/app/cmd.buildDate=$(shell date -u +%Y-%m-%dT%H:%M:%S)' -X 'github.com/razielsd/antibruteforce/app/cmd.gitHash=$(GIT_HASH)'
@@ -19,7 +20,7 @@ build-img:
 			-f build/Dockerfile .
 
 run-img:
-	docker run -p $(ABF_PORT):$(ABF_PORT) --env ABF_ADDR="0.0.0.0:$(ABF_PORT)" $(DOCKER_IMG)
+	docker run --name=$(CONTAINER_NAME) -p $(ABF_PORT):$(ABF_PORT) --env ABF_ADDR="0.0.0.0:$(ABF_PORT)" $(DOCKER_IMG)
 
 version: build
 	$(BIN) version

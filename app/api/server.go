@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 
 	"github.com/razielsd/antibruteforce/app/config"
@@ -49,23 +49,9 @@ func NewAbfAPI(cfg config.AppConfig, logger *zap.Logger) (*AbfAPI, error) {
 }
 
 func (a *AbfAPI) Run() {
+	a.initBWList()
 	r := mux.NewRouter()
-
-	r.HandleFunc("/api/user/allow", a.UserAllow).Methods("POST", "GET")
-
-	r.HandleFunc("/api/whitelist", a.GetWhitelist).Methods("GET")
-	r.HandleFunc("/api/whitelist/add", a.AppendWhitelist).Methods("POST")
-	r.HandleFunc("/api/whitelist/remove", a.RemoveWhitelist).Methods("POST")
-
-	r.HandleFunc("/api/blacklist", a.GetBlacklist).Methods("GET")
-	r.HandleFunc("/api/blacklist/add", a.AppendBlacklist).Methods("POST")
-	r.HandleFunc("/api/blacklist/remove", a.RemoveBlacklist).Methods("POST")
-
-	r.HandleFunc("/api/bucket/drop/login", a.DropLogin).Methods("POST")
-	r.HandleFunc("/api/bucket/drop/pwd", a.DropPasswd).Methods("POST")
-	r.HandleFunc("/api/bucket/drop/ip", a.DropIP).Methods("POST")
-
-	r.Path("/metrics").Handler(promhttp.Handler())
+	a.addRoute(r)
 
 	srv := &http.Server{
 		Addr:         a.cfg.Addr,
@@ -74,7 +60,15 @@ func (a *AbfAPI) Run() {
 		IdleTimeout:  time.Second * 60,
 		Handler:      newHTTPLog(r, a.log),
 	}
+	a.startServer(srv)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	<-ctx.Done()
+	defer cancel()
+	a.stopServer(srv)
+	a.log.Info("server stopped")
+}
 
+func (a *AbfAPI) startServer(srv *http.Server) {
 	go func() {
 		a.log.Info("start server", zap.String("host", a.cfg.Addr))
 		if err := srv.ListenAndServe(); err != nil {
@@ -85,20 +79,47 @@ func (a *AbfAPI) Run() {
 			}
 		}
 	}()
+}
 
-	c := make(chan os.Signal, 1)
-	// @todo: signal.NotifyContext()
-	signal.Notify(c, os.Interrupt)
-
-	<-c
-
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+func (a *AbfAPI) stopServer(srv *http.Server) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err := srv.Shutdown(ctx)
 	if err != nil {
-		a.log.Error("error on shutdown", zap.Error(err))
+		a.log.Error("error during shutdown", zap.Error(err))
 	}
-	a.log.Info("shutting down")
+}
+
+func (a *AbfAPI) initBWList() {
+	errLoad := a.loadIPList(a.whitelist, a.cfg.Whitelist)
+	a.logLoadedIPList(errLoad, "cannot add ip to whitelist from env")
+	errLoad = a.loadIPList(a.blacklist, a.cfg.Blacklist)
+	a.logLoadedIPList(errLoad, "cannot add ip to whitelist from env")
+}
+
+func (a *AbfAPI) loadIPList(table *iptable.IPTable, ips []string) map[string]error {
+	result := make(map[string]error)
+	for _, ip := range ips {
+		ip = strings.TrimSpace(ip)
+		if ip == "" {
+			continue
+		}
+		err := table.Add(ip)
+		if err != nil {
+			result[ip] = err
+		}
+	}
+	return result
+}
+
+func (a *AbfAPI) logLoadedIPList(errLoad map[string]error, message string) {
+	for ip, err := range errLoad {
+		a.log.Error(
+			message,
+			zap.Error(err),
+			zap.String("IP", ip),
+		)
+	}
 }
 
 func (a *AbfAPI) getForm(w http.ResponseWriter, r *http.Request, params []string) (map[string]string, bool) {

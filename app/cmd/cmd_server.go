@@ -21,7 +21,9 @@ func init() {
 }
 
 func serverExecute(command *cobra.Command, args []string) {
-	abf, err := api.NewAbfAPI(abfConfig, abfLogger)
+	cfg := getConfigOrDie()
+	abfLogger := getLoggerorDie(cfg)
+	abf, err := api.NewAbfAPI(cfg, abfLogger)
 	if err != nil {
 		fmt.Printf("Error starting service: %s\n", err)
 		os.Exit(1)
