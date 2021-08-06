@@ -43,4 +43,12 @@ jobs:
         run: make build
 
       - name: make test
-        run: make test
+        run: make test-coverage
+
+      - name: Upload coverage report
+          uses: codecov/codecov-action@v1.0.2
+          with:
+            token: 81423374-9fb2-4837-9704-49019e31eeed
+            file: ./coverage.txt
+            flags: unittests
+            name: codecov-umbrella

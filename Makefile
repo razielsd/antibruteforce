@@ -28,6 +28,9 @@ version: build
 test:
 	go test -race ./app/...
 
+test-coverage:
+	go test -race ./app/... `go list ./app/... | grep -v examples` -coverprofile=coverage.txt -covermode=atomic
+
 lint:
 	golangci-lint run ./app/...
 
