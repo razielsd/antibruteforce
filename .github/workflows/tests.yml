@@ -9,6 +9,20 @@ env:
   GO111MODULE: "on"
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, 'calendar') }}
+    steps:
+      - name: Extract branch name
+        run: echo "BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Linters
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.37
   tests:
     runs-on: ubuntu-latest
     steps:
