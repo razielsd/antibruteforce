@@ -1,5 +1,6 @@
 # Сервис "Анти-брутфорс"
 [![codecov](https://codecov.io/gh/razielsd/antibruteforce/branch/master/graph/badge.svg)](https://codecov.io/gh/razielsd/antibruteforce)
+[![Go Report Card](https://goreportcard.com/badge/github.com/razielsd/antibruteforce)](https://goreportcard.com/report/github.com/razielsd/antibruteforce)
 
 ## Общее описание
 Сервис предназначен для борьбы с подбором паролей при авторизации в какой-либо системе.
