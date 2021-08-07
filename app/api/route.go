@@ -20,5 +20,7 @@ func (a *AbfAPI) addRoute(r *mux.Router) {
 	r.HandleFunc("/api/bucket/drop/pwd", a.DropPasswd).Methods("POST")
 	r.HandleFunc("/api/bucket/drop/ip", a.DropIP).Methods("POST")
 
+	r.HandleFunc("/health/liveness", a.ActionHealthProbe).Methods("GET")
+	r.HandleFunc("/health/readiness", a.ActionHealthProbe).Methods("GET")
 	r.Path("/metrics").Handler(promhttp.Handler())
 }

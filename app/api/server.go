@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
-	"os/signal"
 	"strings"
 	"time"
 
@@ -48,22 +46,13 @@ func NewAbfAPI(cfg config.AppConfig, logger *zap.Logger) (*AbfAPI, error) {
 	return api, nil
 }
 
-func (a *AbfAPI) Run() {
+func (a *AbfAPI) Run(ctx context.Context) {
 	a.initBWList()
 	r := mux.NewRouter()
 	a.addRoute(r)
-
-	srv := &http.Server{
-		Addr:         a.cfg.Addr,
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
-		Handler:      newHTTPLog(r, a.log),
-	}
+	srv := a.createServer(r)
 	a.startServer(srv)
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	<-ctx.Done()
-	defer cancel()
 	a.stopServer(srv)
 	a.log.Info("server stopped")
 }
@@ -79,6 +68,16 @@ func (a *AbfAPI) startServer(srv *http.Server) {
 			}
 		}
 	}()
+}
+
+func (a *AbfAPI) createServer(r *mux.Router) *http.Server {
+	return &http.Server{
+		Addr:         a.cfg.Addr,
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		Handler:      newHTTPLog(r, a.log),
+	}
 }
 
 func (a *AbfAPI) stopServer(srv *http.Server) {

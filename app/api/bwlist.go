@@ -56,12 +56,7 @@ func (a *AbfAPI) bwlistRemove(srcName string, srcTable *iptable.IPTable, w http.
 		return
 	}
 	ip := form["ip"]
-	err := srcTable.Remove(ip)
-	if err != nil {
-		a.log.Error(srcName+" - unable remove ip", zap.Error(err))
-		a.sendError(w, ErrCodeUnableCheckIP, "Unable remove ip", err)
-		return
-	}
+	srcTable.Remove(ip)
 	a.log.Info(srcName+" removed ip", zap.String("IP", ip))
 	a.sendResult(w, NewSuccessOK())
 }

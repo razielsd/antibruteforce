@@ -11,6 +11,17 @@
 ## API
 
 ## CLI
+Usage:
+```antibruteforce [command]```
+
+ * Available Commands:
+ * blacklist   Show blacklist
+ * bucket      Drop bucket by login, password or ip
+ * completion  generate the autocompletion script for the specified shell
+ * help        Help about any command
+ * server      Run service
+ * version     Show version
+ * whitelist   Show whitelist
 
 ##  Мониторинг
 Сервис позволяет собирать метрики для prometheus по адресу: _/mertics_

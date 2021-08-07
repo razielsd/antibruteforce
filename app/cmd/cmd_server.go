@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
 
 	"github.com/spf13/cobra"
 
@@ -28,5 +30,7 @@ func serverExecute(command *cobra.Command, args []string) {
 		fmt.Printf("Error starting service: %s\n", err)
 		os.Exit(1)
 	}
-	abf.Run()
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	abf.Run(ctx)
+	defer cancel()
 }
