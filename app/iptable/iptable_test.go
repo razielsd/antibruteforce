@@ -150,8 +150,7 @@ func TestRemove_IP_Exists(t *testing.T) {
 			require.NoError(t, err)
 			require.True(t, f)
 
-			err = iptable.Remove(test.tableIP)
-			require.NoError(t, err)
+			iptable.Remove(test.tableIP)
 
 			f, err = iptable.Contains(test.searchIP)
 			require.NoError(t, err)
@@ -178,8 +177,7 @@ func TestRemove_IP_NotExists(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			iptable := NewIPTable()
-			err := iptable.Remove(test.tableIP)
-			require.NoError(t, err)
+			require.NotPanics(t, func() { iptable.Remove(test.tableIP) })
 		})
 	}
 }

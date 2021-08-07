@@ -21,8 +21,15 @@ func TestAbfAPI_UserAllow_EmptyBWList_AuthSuccess(t *testing.T) {
 	api.UserAllow(w, r)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	expJSON := `{"result":{"can-auth":true,"login-check":true,"pwd-check":true,"ip-check":true,"whitelist-check":false,"blacklist-check":false},"code":0}`
-	require.JSONEq(t, expJSON, w.Body.String())
+	exp := SuccessResponse{
+		Result: AllowResult{
+			CanAuth: true,
+			Login:   true,
+			Pwd:     true,
+			IP:      true,
+		},
+	}
+	require.JSONEq(t, exp.JSON(), w.Body.String())
 }
 
 func TestAbfAPI_UserAllow_IpInBlacklist_AuthFailed(t *testing.T) {
@@ -33,8 +40,12 @@ func TestAbfAPI_UserAllow_IpInBlacklist_AuthFailed(t *testing.T) {
 	api.UserAllow(w, r)
 
 	require.Equal(t, http.StatusOK, w.Code)
-	expJSON := `{"result":{"can-auth":false,"login-check":false,"pwd-check":false,"ip-check":false,"whitelist-check":false,"blacklist-check":true},"code":0}`
-	require.JSONEq(t, expJSON, w.Body.String())
+	exp := SuccessResponse{
+		Result: AllowResult{
+			Blacklist: true,
+		},
+	}
+	require.JSONEq(t, exp.JSON(), w.Body.String())
 }
 
 func TestAbfAPI_UserAllow_IpInWhitelist_AuthSuccess(t *testing.T) {
@@ -43,12 +54,18 @@ func TestAbfAPI_UserAllow_IpInWhitelist_AuthSuccess(t *testing.T) {
 	api := createServer()
 	err := api.whitelist.Add("192.168.1.71")
 	require.NoError(t, err)
-	expJSON := `{"result":{"can-auth":true,"login-check":false,"pwd-check":false,"ip-check":false,"whitelist-check":true,"blacklist-check":false},"code":0}`
+	exp := SuccessResponse{
+		Result: AllowResult{
+			CanAuth:   true,
+			Whitelist: true,
+		},
+	}
+
 	for i := 0; i < tryTotal; i++ {
 		w, r := createPostReqAndWriter(createAllowParam("Ivan", "123456", ip))
 		api.UserAllow(w, r)
 		require.Equal(t, http.StatusOK, w.Code)
-		require.JSONEq(t, expJSON, w.Body.String())
+		require.JSONEq(t, exp.JSON(), w.Body.String())
 	}
 }
 
@@ -89,12 +106,19 @@ func TestAbfAPI_UserAllow_LimitExceed_AuthFailed(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			api := createServer()
-			expJSON := `{"result":{"can-auth":true,"login-check":true,"pwd-check":true,"ip-check":true,"whitelist-check":false,"blacklist-check":false},"code":0}`
+			exp := SuccessResponse{
+				Result: AllowResult{
+					CanAuth: true,
+					Login:   true,
+					Pwd:     true,
+					IP:      true,
+				},
+			}
 			for i := 0; i < testAPIRate; i++ {
 				w, r := createPostReqAndWriter(createAllowParam(testLogin, testPwd, testIP))
 				api.UserAllow(w, r)
 				require.Equal(t, http.StatusOK, w.Code)
-				require.JSONEq(t, expJSON, w.Body.String())
+				require.JSONEq(t, exp.JSON(), w.Body.String())
 			}
 			w, r := createPostReqAndWriter(createAllowParam(test.login, test.passwd, test.ip))
 			api.UserAllow(w, r)

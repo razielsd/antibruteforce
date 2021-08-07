@@ -88,7 +88,7 @@ func (a *IPTable) GetAll() []string {
 	return ips
 }
 
-func (a *IPTable) Remove(ipOrMask string) error {
+func (a *IPTable) Remove(ipOrMask string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	if a.isMask(ipOrMask) {
@@ -96,7 +96,6 @@ func (a *IPTable) Remove(ipOrMask string) error {
 	} else {
 		delete(a.ipList, ipOrMask)
 	}
-	return nil
 }
 
 func (a *IPTable) isMask(ipOrMask string) bool {

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"sort"
@@ -55,6 +56,20 @@ func TestAbfAPI_AppendWhitelist_EmptyIP_Error(t *testing.T) {
 	require.JSONEq(t, exp.JSON(), w.Body.String())
 }
 
+func TestAbfAPI_AppendWhitelist_WrongIP_Error(t *testing.T) {
+	api := createServer()
+	ip := "192.168.1.x"
+	w, r := createPostReqAndWriter("ip=" + ip)
+	api.AppendWhitelist(w, r)
+	require.Equal(t, http.StatusBadRequest, w.Code)
+
+	exp := ErrorResponse{
+		Code:       ErrCodeUnableCheckIP,
+		ErrMessage: fmt.Sprintf("Unable add ip: invalid ip address:%s is not valid ipv4 address", ip),
+	}
+	require.JSONEq(t, exp.JSON(), w.Body.String())
+}
+
 func TestAbfAPI_AppendBlacklist_ValidIP_Success(t *testing.T) {
 	api := createServer()
 	w, r := createPostReqAndWriter("ip=" + clientIP)
@@ -75,6 +90,20 @@ func TestAbfAPI_AppendBlacklist_EmptyIP_Error(t *testing.T) {
 	exp := ErrorResponse{
 		Code:       ErrCodeEmptyParam,
 		ErrMessage: "empty param: require param ip",
+	}
+	require.JSONEq(t, exp.JSON(), w.Body.String())
+}
+
+func TestAbfAPI_AppendBlacklist_WrongIP_Error(t *testing.T) {
+	api := createServer()
+	ip := "192.168.1.x"
+	w, r := createPostReqAndWriter("ip=" + ip)
+	api.AppendBlacklist(w, r)
+	require.Equal(t, http.StatusBadRequest, w.Code)
+
+	exp := ErrorResponse{
+		Code:       ErrCodeUnableCheckIP,
+		ErrMessage: fmt.Sprintf("Unable add ip: invalid ip address:%s is not valid ipv4 address", ip),
 	}
 	require.JSONEq(t, exp.JSON(), w.Body.String())
 }
