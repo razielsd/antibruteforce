@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testKey = "test"
+
 func TestNewRateLimiter(t *testing.T) {
 	rate := 200
 	l := NewReqLimiter(NewLimiterConfig(rate))
@@ -38,40 +40,36 @@ func TestReqLimiter_Clean(t *testing.T) {
 }
 
 func TestReqLimiter_Remove(t *testing.T) {
-	key := "test"
 	reqLimiter := NewReqLimiter(NewLimiterConfig(2))
-	require.True(t, reqLimiter.Allow(key))
-	require.True(t, reqLimiter.Allow(key))
-	require.False(t, reqLimiter.Allow(key))
-	reqLimiter.Remove(key)
-	require.True(t, reqLimiter.Allow(key))
-	require.True(t, reqLimiter.Allow(key))
-	require.False(t, reqLimiter.Allow(key))
+	require.True(t, reqLimiter.Allow(testKey))
+	require.True(t, reqLimiter.Allow(testKey))
+	require.False(t, reqLimiter.Allow(testKey))
+	reqLimiter.Remove(testKey)
+	require.True(t, reqLimiter.Allow(testKey))
+	require.True(t, reqLimiter.Allow(testKey))
+	require.False(t, reqLimiter.Allow(testKey))
 }
 
 func TestReqLimiter_CleanByTimer(t *testing.T) {
-	key := "test"
 	cfg := NewLimiterConfig(2)
 	cfg.TTL = 1
 	cfg.CleanInterval = 1010 * time.Millisecond
 	reqLimiter := NewReqLimiter(cfg)
-	require.True(t, reqLimiter.Allow(key))
-	require.True(t, reqLimiter.HasKey(key))
+	require.True(t, reqLimiter.Allow(testKey))
+	require.True(t, reqLimiter.HasKey(testKey))
 	cond := func() bool {
-		return reqLimiter.HasKey(key)
+		return reqLimiter.HasKey(testKey)
 	}
 	require.Eventually(t, cond, 5*time.Second, 100*time.Millisecond)
 }
 
 func TestReqLimiter_HasKey_Exists(t *testing.T) {
-	key := "test"
 	reqLimiter := NewReqLimiter(NewLimiterConfig(2))
-	require.True(t, reqLimiter.Allow(key))
-	require.True(t, reqLimiter.HasKey(key))
+	require.True(t, reqLimiter.Allow(testKey))
+	require.True(t, reqLimiter.HasKey(testKey))
 }
 
 func TestReqLimiter_HasKey_NotExists(t *testing.T) {
-	key := "test"
 	reqLimiter := NewReqLimiter(NewLimiterConfig(2))
-	require.False(t, reqLimiter.HasKey(key))
+	require.False(t, reqLimiter.HasKey(testKey))
 }
