@@ -47,7 +47,7 @@ func init() {
 	dropBucketCmd.AddCommand(dropBucketPwdCmd)
 	dropBucketCmd.AddCommand(dropBucketIPCmd)
 	rootBucketCmd.AddCommand(dropBucketCmd)
-	RootCmd.AddCommand(rootBucketCmd)
+	rootCmd.AddCommand(rootBucketCmd)
 }
 
 func dropBucketByLogin(cmd *cobra.Command, args []string) {

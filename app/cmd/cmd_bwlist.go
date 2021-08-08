@@ -70,12 +70,12 @@ func init() {
 	rootBlacklistCmd.AddCommand(showBlacklistCmd)
 	rootBlacklistCmd.AddCommand(appendBlacklistCmd)
 	rootBlacklistCmd.AddCommand(rmBlacklistCmd)
-	RootCmd.AddCommand(rootBlacklistCmd)
+	rootCmd.AddCommand(rootBlacklistCmd)
 
 	rootWhitelistCmd.AddCommand(showWhitelistCmd)
 	rootWhitelistCmd.AddCommand(appendWhitelistCmd)
 	rootWhitelistCmd.AddCommand(rmWhitelistCmd)
-	RootCmd.AddCommand(rootWhitelistCmd)
+	rootCmd.AddCommand(rootWhitelistCmd)
 }
 
 func showBlacklistExecute(cmd *cobra.Command, args []string) {

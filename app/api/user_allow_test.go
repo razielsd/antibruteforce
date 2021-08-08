@@ -18,7 +18,7 @@ const testAPIRate = 2
 func TestAbfAPI_UserAllow_EmptyBWList_AuthSuccess(t *testing.T) {
 	w, r := createPostReqAndWriter(createAllowParam("Ivan", "123456", "192.168.1.71"))
 	api := createServer()
-	api.UserAllow(w, r)
+	api.handlerUserAllow(w, r)
 
 	require.Equal(t, http.StatusOK, w.Code)
 	exp := SuccessResponse{
@@ -37,7 +37,7 @@ func TestAbfAPI_UserAllow_IpInBlacklist_AuthFailed(t *testing.T) {
 	api := createServer()
 	err := api.blacklist.Add("192.168.1.71")
 	require.NoError(t, err)
-	api.UserAllow(w, r)
+	api.handlerUserAllow(w, r)
 
 	require.Equal(t, http.StatusOK, w.Code)
 	exp := SuccessResponse{
@@ -63,7 +63,7 @@ func TestAbfAPI_UserAllow_IpInWhitelist_AuthSuccess(t *testing.T) {
 
 	for i := 0; i < tryTotal; i++ {
 		w, r := createPostReqAndWriter(createAllowParam("Ivan", "123456", ip))
-		api.UserAllow(w, r)
+		api.handlerUserAllow(w, r)
 		require.Equal(t, http.StatusOK, w.Code)
 		require.JSONEq(t, exp.JSON(), w.Body.String())
 	}
@@ -116,12 +116,12 @@ func TestAbfAPI_UserAllow_LimitExceed_AuthFailed(t *testing.T) {
 			}
 			for i := 0; i < testAPIRate; i++ {
 				w, r := createPostReqAndWriter(createAllowParam(testLogin, testPwd, testIP))
-				api.UserAllow(w, r)
+				api.handlerUserAllow(w, r)
 				require.Equal(t, http.StatusOK, w.Code)
 				require.JSONEq(t, exp.JSON(), w.Body.String())
 			}
 			w, r := createPostReqAndWriter(createAllowParam(test.login, test.passwd, test.ip))
-			api.UserAllow(w, r)
+			api.handlerUserAllow(w, r)
 			require.Equal(t, http.StatusOK, w.Code)
 			ej, err := json.Marshal(SuccessResponse{Result: test.exp})
 			require.NoError(t, err, "Unable marshal expected json")
@@ -155,7 +155,7 @@ func TestAllowResult_Build_CanAuthSuccess(t *testing.T) {
 func TestAbfAPI_UserAllow_WrongIP_Error(t *testing.T) {
 	w, r := createPostReqAndWriter(createAllowParam("Ivan", "123456", "192.168.1.711"))
 	api := createServer()
-	api.UserAllow(w, r)
+	api.handlerUserAllow(w, r)
 
 	require.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -187,7 +187,7 @@ func TestAbfAPI_UserAllow_EmptyParam_Error(t *testing.T) {
 				createAllowParam(test.login, test.pwd, test.ip),
 			)
 			api := createServer()
-			api.UserAllow(w, r)
+			api.handlerUserAllow(w, r)
 			require.Equal(t, http.StatusBadRequest, w.Code)
 			exp := ErrorResponse{
 				Code:       ErrCodeEmptyParam,

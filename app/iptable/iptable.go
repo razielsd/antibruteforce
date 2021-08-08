@@ -9,11 +9,13 @@ import (
 	"sync"
 )
 
+// Validation errors.
 var (
 	ErrInvalidIpv4Address = errors.New("invalid ip address")
 	ErrInvalidIpv4Mask    = errors.New("invalid ip mask")
 )
 
+// IPTable Container for ip/mask.
 type IPTable struct {
 	maskList map[string]*net.IPNet
 	ipList   map[string]struct{}

@@ -18,7 +18,7 @@ func TestAbfAPI_GetBlacklist(t *testing.T) {
 	require.NoError(t, err)
 
 	w, r := createGetReqAndWriter()
-	api.GetBlacklist(w, r)
+	api.handlerGetBlacklist(w, r)
 	assertResponseContainsIP(t, w, []string{clientIP})
 }
 
@@ -27,7 +27,7 @@ func TestAbfAPI_GetWhitelist(t *testing.T) {
 	err := api.whitelist.Add(clientIP)
 	require.NoError(t, err)
 	w, r := createGetReqAndWriter()
-	api.GetWhitelist(w, r)
+	api.handlerGetWhitelist(w, r)
 
 	assertResponseContainsIP(t, w, []string{clientIP})
 }
@@ -35,18 +35,18 @@ func TestAbfAPI_GetWhitelist(t *testing.T) {
 func TestAbfAPI_AppendWhitelist_ValidIP_Success(t *testing.T) {
 	api := createServer()
 	w, r := createPostReqAndWriter("ip=" + clientIP)
-	api.AppendWhitelist(w, r)
+	api.handlerAppendWhitelist(w, r)
 	assertResponseOK(t, w)
 
 	w, r = createGetReqAndWriter()
-	api.GetWhitelist(w, r)
+	api.handlerGetWhitelist(w, r)
 	assertResponseContainsIP(t, w, []string{clientIP})
 }
 
 func TestAbfAPI_AppendWhitelist_EmptyIP_Error(t *testing.T) {
 	api := createServer()
 	w, r := createPostReqAndWriter("")
-	api.AppendWhitelist(w, r)
+	api.handlerAppendWhitelist(w, r)
 	require.Equal(t, http.StatusBadRequest, w.Code)
 
 	exp := ErrorResponse{
@@ -60,7 +60,7 @@ func TestAbfAPI_AppendWhitelist_WrongIP_Error(t *testing.T) {
 	api := createServer()
 	ip := "192.168.1.x"
 	w, r := createPostReqAndWriter("ip=" + ip)
-	api.AppendWhitelist(w, r)
+	api.handlerAppendWhitelist(w, r)
 	require.Equal(t, http.StatusBadRequest, w.Code)
 
 	exp := ErrorResponse{
@@ -73,18 +73,18 @@ func TestAbfAPI_AppendWhitelist_WrongIP_Error(t *testing.T) {
 func TestAbfAPI_AppendBlacklist_ValidIP_Success(t *testing.T) {
 	api := createServer()
 	w, r := createPostReqAndWriter("ip=" + clientIP)
-	api.AppendBlacklist(w, r)
+	api.handlerAppendBlacklist(w, r)
 	assertResponseOK(t, w)
 
 	w, r = createGetReqAndWriter()
-	api.GetBlacklist(w, r)
+	api.handlerGetBlacklist(w, r)
 	assertResponseContainsIP(t, w, []string{clientIP})
 }
 
 func TestAbfAPI_AppendBlacklist_EmptyIP_Error(t *testing.T) {
 	api := createServer()
 	w, r := createPostReqAndWriter("")
-	api.AppendBlacklist(w, r)
+	api.handlerAppendBlacklist(w, r)
 	require.Equal(t, http.StatusBadRequest, w.Code)
 
 	exp := ErrorResponse{
@@ -98,7 +98,7 @@ func TestAbfAPI_AppendBlacklist_WrongIP_Error(t *testing.T) {
 	api := createServer()
 	ip := "192.168.1.x"
 	w, r := createPostReqAndWriter("ip=" + ip)
-	api.AppendBlacklist(w, r)
+	api.handlerAppendBlacklist(w, r)
 	require.Equal(t, http.StatusBadRequest, w.Code)
 
 	exp := ErrorResponse{
@@ -112,30 +112,30 @@ func TestAbfAPI_RemoveWhitelist_ValidIP_Success(t *testing.T) {
 	api := createServer()
 
 	w, r := createGetReqAndWriter()
-	api.GetWhitelist(w, r)
+	api.handlerGetWhitelist(w, r)
 	assertResponseContainsIP(t, w, []string{})
 
 	w, r = createPostReqAndWriter("ip=" + clientIP)
-	api.AppendWhitelist(w, r)
+	api.handlerAppendWhitelist(w, r)
 	assertResponseOK(t, w)
 
 	w, r = createGetReqAndWriter()
-	api.GetWhitelist(w, r)
+	api.handlerGetWhitelist(w, r)
 	assertResponseContainsIP(t, w, []string{clientIP})
 
 	w, r = createPostReqAndWriter("ip=" + clientIP)
-	api.RemoveWhitelist(w, r)
+	api.handlerRemoveWhitelist(w, r)
 	assertResponseOK(t, w)
 
 	w, r = createGetReqAndWriter()
-	api.GetWhitelist(w, r)
+	api.handlerGetWhitelist(w, r)
 	assertResponseContainsIP(t, w, []string{})
 }
 
 func TestAbfAPI_RemoveWhitelist_EmptyIP_Error(t *testing.T) {
 	api := createServer()
 	w, r := createPostReqAndWriter("")
-	api.RemoveWhitelist(w, r)
+	api.handlerRemoveWhitelist(w, r)
 	require.Equal(t, http.StatusBadRequest, w.Code)
 
 	exp := ErrorResponse{
@@ -149,30 +149,30 @@ func TestAbfAPI_RemoveBlacklist_ValidIP_Success(t *testing.T) {
 	api := createServer()
 
 	w, r := createGetReqAndWriter()
-	api.GetBlacklist(w, r)
+	api.handlerGetBlacklist(w, r)
 	assertResponseContainsIP(t, w, []string{})
 
 	w, r = createPostReqAndWriter("ip=" + clientIP)
-	api.AppendBlacklist(w, r)
+	api.handlerAppendBlacklist(w, r)
 	assertResponseOK(t, w)
 
 	w, r = createGetReqAndWriter()
-	api.GetBlacklist(w, r)
+	api.handlerGetBlacklist(w, r)
 	assertResponseContainsIP(t, w, []string{clientIP})
 
 	w, r = createPostReqAndWriter("ip=" + clientIP)
-	api.RemoveBlacklist(w, r)
+	api.handlerRemoveBlacklist(w, r)
 	assertResponseOK(t, w)
 
 	w, r = createGetReqAndWriter()
-	api.GetBlacklist(w, r)
+	api.handlerGetBlacklist(w, r)
 	assertResponseContainsIP(t, w, []string{})
 }
 
 func TestAbfAPI_RemoveBlacklist_EmptyIP_Error(t *testing.T) {
 	api := createServer()
 	w, r := createPostReqAndWriter("")
-	api.RemoveBlacklist(w, r)
+	api.handlerRemoveBlacklist(w, r)
 	require.Equal(t, http.StatusBadRequest, w.Code)
 
 	exp := ErrorResponse{

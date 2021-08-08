@@ -16,15 +16,15 @@ func TestAbfAPI_Drop_EmptyKey(t *testing.T) {
 	}{
 		{
 			name:   "DropLogin",
-			action: api.DropLogin,
+			action: api.handlerDropLogin,
 		},
 		{
 			name:   "DropPwd",
-			action: api.DropPasswd,
+			action: api.handlerDropPasswd,
 		},
 		{
 			name:   "DropIP",
-			action: api.DropIP,
+			action: api.handlerDropIP,
 		},
 	}
 	for _, test := range tests {
@@ -48,10 +48,10 @@ func TestAbfAPI_DropLogin_ExistsKey(t *testing.T) {
 	isDisallow := fillServerForParam(t, api, allowParam)
 	require.True(t, isDisallow)
 	w, r := createPostReqAndWriter("key=Ivan")
-	api.DropLogin(w, r)
+	api.handlerDropLogin(w, r)
 	assertResponseOK(t, w)
 	w, r = createPostReqAndWriter(allowParam)
-	api.UserAllow(w, r)
+	api.handlerUserAllow(w, r)
 	require.Equal(t, http.StatusOK, w.Code)
 	resp := &SuccessResponse{
 		Result: AllowResult{
@@ -67,10 +67,10 @@ func TestAbfAPI_DropPwd_ExistsKey(t *testing.T) {
 	isDisallow := fillServerForParam(t, api, allowParam)
 	require.True(t, isDisallow)
 	w, r := createPostReqAndWriter("key=123456")
-	api.DropPasswd(w, r)
+	api.handlerDropPasswd(w, r)
 	assertResponseOK(t, w)
 	w, r = createPostReqAndWriter(allowParam)
-	api.UserAllow(w, r)
+	api.handlerUserAllow(w, r)
 	require.Equal(t, http.StatusOK, w.Code)
 	resp := &SuccessResponse{
 		Result: AllowResult{
@@ -86,10 +86,10 @@ func TestAbfAPI_DropIP_ExistsKey(t *testing.T) {
 	isDisallow := fillServerForParam(t, api, allowParam)
 	require.True(t, isDisallow)
 	w, r := createPostReqAndWriter("key=192.168.1.71")
-	api.DropIP(w, r)
+	api.handlerDropIP(w, r)
 	assertResponseOK(t, w)
 	w, r = createPostReqAndWriter(allowParam)
-	api.UserAllow(w, r)
+	api.handlerUserAllow(w, r)
 	require.Equal(t, http.StatusOK, w.Code)
 	resp := &SuccessResponse{
 		Result: AllowResult{
@@ -102,7 +102,7 @@ func TestAbfAPI_DropIP_ExistsKey(t *testing.T) {
 func fillServerForParam(t *testing.T, api *AbfAPI, params string) bool {
 	for i := 0; i <= testAPIRate; i++ {
 		w, r := createPostReqAndWriter(params)
-		api.UserAllow(w, r)
+		api.handlerUserAllow(w, r)
 		require.Equal(t, http.StatusOK, w.Code)
 		resp := struct {
 			Result map[string]bool

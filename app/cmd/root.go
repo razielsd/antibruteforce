@@ -12,14 +12,15 @@ import (
 	"github.com/razielsd/antibruteforce/app/logger"
 )
 
-var RootCmd = &cobra.Command{
+var rootCmd = &cobra.Command{
 	Use:   "antibruteforce",
 	Short: "antibruteforce",
 	Long:  `Antibruteforce service cli`,
 }
 
+// Execute main run point.
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

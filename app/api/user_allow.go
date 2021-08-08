@@ -15,7 +15,7 @@ type AllowResult struct {
 	Blacklist bool `json:"blacklist-check"`
 }
 
-func (a *AbfAPI) UserAllow(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerUserAllow(w http.ResponseWriter, r *http.Request) {
 	form, ok := a.getForm(w, r, []string{"login", "pwd", "ip"})
 	if !ok {
 		return
