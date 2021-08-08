@@ -12,7 +12,7 @@ func (a *AbfAPI) DropLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a.loginLimiter.Remove(form["key"])
-	a.log.Error("Drop bucket for login", zap.String("login", form["key"]))
+	a.log.Info("Drop bucket for login", zap.String("login", form["key"]))
 	a.sendResult(w, NewSuccessOK())
 }
 
@@ -23,7 +23,7 @@ func (a *AbfAPI) DropPasswd(w http.ResponseWriter, r *http.Request) {
 	}
 	pwd := encodePwd(form["key"])
 	a.pwdLimiter.Remove(pwd)
-	a.log.Error("Drop bucket for password")
+	a.log.Info("Drop bucket for password")
 	a.sendResult(w, NewSuccessOK())
 }
 

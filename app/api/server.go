@@ -147,7 +147,6 @@ func (a *AbfAPI) sendResult(w http.ResponseWriter, data interface{}) {
 }
 
 func (a *AbfAPI) sendError(w http.ResponseWriter, code int, message string, err error) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
 	encErr := json.NewEncoder(w).Encode(
 		ErrorResponse{

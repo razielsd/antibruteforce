@@ -9,12 +9,10 @@ import (
 )
 
 func (a *AbfAPI) GetWhitelist(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	a.sendResult(w, a.whitelist.GetAll())
 }
 
 func (a *AbfAPI) GetBlacklist(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	a.sendResult(w, a.blacklist.GetAll())
 }
 

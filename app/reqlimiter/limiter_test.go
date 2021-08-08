@@ -31,7 +31,7 @@ func TestReqLimiter_Clean(t *testing.T) {
 		LastAccess: time.Now().Unix() - limiterTTL + 10,
 	}
 
-	reqLimiter.Clean()
+	reqLimiter.clean()
 	require.Len(t, reqLimiter.items, 1)
 	_, ok := reqLimiter.items["f2"]
 	require.True(t, ok)

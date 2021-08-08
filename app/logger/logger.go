@@ -7,6 +7,7 @@ import (
 	"github.com/razielsd/antibruteforce/app/config"
 )
 
+// GetLogger Get initialized logger.
 func GetLogger(appCfg config.AppConfig) (*zap.Logger, error) {
 	var logLevel zap.AtomicLevel
 	err := logLevel.UnmarshalText([]byte(appCfg.LogLevel))

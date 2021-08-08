@@ -25,6 +25,7 @@ type limiterInfo struct {
 	mu         sync.Mutex
 }
 
+// NewReqLimiter create new instance of ReqLimiter.
 func NewReqLimiter(reqRate int) *ReqLimiter {
 	limiter := &ReqLimiter{
 		ttl:   limiterTTL,
@@ -34,12 +35,13 @@ func NewReqLimiter(reqRate int) *ReqLimiter {
 	}
 	go func() {
 		for range time.Tick(limiterCleanInterval * time.Second) {
-			limiter.Clean()
+			limiter.clean()
 		}
 	}()
 	return limiter
 }
 
+// Allow check allow or not action by limits.
 func (r *ReqLimiter) Allow(key string) bool {
 	li := r.getOrCreateLimiter(key)
 	return li.Allow()
@@ -59,7 +61,22 @@ func (r *ReqLimiter) getOrCreateLimiter(key string) *limiterInfo {
 	return li
 }
 
-func (r *ReqLimiter) Clean() {
+// Remove remove bucket.
+func (r *ReqLimiter) Remove(key string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.items, key)
+}
+
+// Allow check allow or not action by limits.
+func (l *limiterInfo) Allow() bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.LastAccess = time.Now().Unix()
+	return l.Limiter.Allow()
+}
+
+func (r *ReqLimiter) clean() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	expire := time.Now().Unix() - int64(r.ttl)
@@ -68,17 +85,4 @@ func (r *ReqLimiter) Clean() {
 			delete(r.items, i)
 		}
 	}
-}
-
-func (r *ReqLimiter) Remove(key string) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	delete(r.items, key)
-}
-
-func (l *limiterInfo) Allow() bool {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.LastAccess = time.Now().Unix()
-	return l.Limiter.Allow()
 }
