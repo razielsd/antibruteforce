@@ -51,6 +51,7 @@ func newResponseLogger(w http.ResponseWriter) (*responseLogger, http.ResponseWri
 	})
 }
 
+// Write - io.Writer interface.
 func (l *responseLogger) Write(b []byte) (int, error) {
 	size, err := l.w.Write(b)
 	l.size += size
@@ -70,6 +71,7 @@ func (l *responseLogger) Size() int {
 	return l.size
 }
 
+// Hijack http.Hijack interface.
 func (l *responseLogger) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	conn, rw, err := l.w.(http.Hijacker).Hijack()
 	if err == nil && l.status == 0 {

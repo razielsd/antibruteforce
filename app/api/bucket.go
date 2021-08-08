@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (a *AbfAPI) DropLogin(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerDropLogin(w http.ResponseWriter, r *http.Request) {
 	form, ok := a.getForm(w, r, []string{"key"})
 	if !ok {
 		return
@@ -16,7 +16,7 @@ func (a *AbfAPI) DropLogin(w http.ResponseWriter, r *http.Request) {
 	a.sendResult(w, NewSuccessOK())
 }
 
-func (a *AbfAPI) DropPasswd(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerDropPasswd(w http.ResponseWriter, r *http.Request) {
 	form, ok := a.getForm(w, r, []string{"key"})
 	if !ok {
 		return
@@ -27,7 +27,7 @@ func (a *AbfAPI) DropPasswd(w http.ResponseWriter, r *http.Request) {
 	a.sendResult(w, NewSuccessOK())
 }
 
-func (a *AbfAPI) DropIP(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerDropIP(w http.ResponseWriter, r *http.Request) {
 	form, ok := a.getForm(w, r, []string{"key"})
 	if !ok {
 		return

@@ -10,7 +10,7 @@ import (
 func TestAbfAPI_ActionHealthProbe(t *testing.T) {
 	w, r := createGetReqAndWriter()
 	api := createServer()
-	api.ActionHealthProbe(w, r)
+	api.handlerHealthProbe(w, r)
 
 	require.Equal(t, http.StatusOK, w.Code)
 	exp := SuccessResponse{Result: NewSuccessOK()}

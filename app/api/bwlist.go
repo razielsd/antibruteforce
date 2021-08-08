@@ -8,19 +8,19 @@ import (
 	"github.com/razielsd/antibruteforce/app/iptable"
 )
 
-func (a *AbfAPI) GetWhitelist(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerGetWhitelist(w http.ResponseWriter, r *http.Request) {
 	a.sendResult(w, a.whitelist.GetAll())
 }
 
-func (a *AbfAPI) GetBlacklist(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerGetBlacklist(w http.ResponseWriter, r *http.Request) {
 	a.sendResult(w, a.blacklist.GetAll())
 }
 
-func (a *AbfAPI) AppendWhitelist(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerAppendWhitelist(w http.ResponseWriter, r *http.Request) {
 	a.bwlistAdd("Whitelist", a.whitelist, w, r)
 }
 
-func (a *AbfAPI) AppendBlacklist(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerAppendBlacklist(w http.ResponseWriter, r *http.Request) {
 	a.bwlistAdd("Blacklist", a.blacklist, w, r)
 }
 
@@ -40,11 +40,11 @@ func (a *AbfAPI) bwlistAdd(srcName string, srcTable *iptable.IPTable, w http.Res
 	a.sendResult(w, NewSuccessOK())
 }
 
-func (a *AbfAPI) RemoveWhitelist(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerRemoveWhitelist(w http.ResponseWriter, r *http.Request) {
 	a.bwlistRemove("Whitelist", a.whitelist, w, r)
 }
 
-func (a *AbfAPI) RemoveBlacklist(w http.ResponseWriter, r *http.Request) {
+func (a *AbfAPI) handlerRemoveBlacklist(w http.ResponseWriter, r *http.Request) {
 	a.bwlistRemove("Blacklist", a.blacklist, w, r)
 }
 

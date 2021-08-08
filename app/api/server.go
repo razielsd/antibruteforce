@@ -23,6 +23,7 @@ const (
 	ErrCodeEmptyParam         = 3
 )
 
+// AbfAPI  service api.
 type AbfAPI struct {
 	cfg          config.AppConfig
 	log          *zap.Logger
@@ -33,6 +34,7 @@ type AbfAPI struct {
 	blacklist    *iptable.IPTable
 }
 
+// NewAbfAPI new instance of AbfAPI.
 func NewAbfAPI(cfg config.AppConfig, logger *zap.Logger) (*AbfAPI, error) {
 	api := &AbfAPI{
 		cfg:          cfg,
@@ -46,6 +48,7 @@ func NewAbfAPI(cfg config.AppConfig, logger *zap.Logger) (*AbfAPI, error) {
 	return api, nil
 }
 
+// Run run service api.
 func (a *AbfAPI) Run(ctx context.Context) {
 	a.initBWList()
 	r := mux.NewRouter()
