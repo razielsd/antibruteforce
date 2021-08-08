@@ -20,6 +20,7 @@ type IPTable struct {
 	mu       sync.Mutex
 }
 
+// NewIPTable create new instance of IPTable.
 func NewIPTable() *IPTable {
 	return &IPTable{
 		maskList: make(map[string]*net.IPNet),
@@ -28,6 +29,7 @@ func NewIPTable() *IPTable {
 	}
 }
 
+// Contains check contain IP in table.
 func (a *IPTable) Contains(clientIP string) (bool, error) {
 	ip := net.ParseIP(clientIP)
 	if ip.To4() == nil {
@@ -47,6 +49,7 @@ func (a *IPTable) Contains(clientIP string) (bool, error) {
 	return false, nil
 }
 
+// Add add ip or net mask.
 func (a *IPTable) Add(ipOrMask string) error {
 	if a.isMask(ipOrMask) {
 		return a.addMask(ipOrMask)
@@ -76,6 +79,7 @@ func (a *IPTable) addIP(clientIP string) error {
 	return nil
 }
 
+// GetAll get all registered ip or net mask.
 func (a *IPTable) GetAll() []string {
 	ips := []string{}
 	for ip := range a.ipList {

@@ -25,21 +25,38 @@ type limiterInfo struct {
 	mu         sync.Mutex
 }
 
-func NewReqLimiter(reqRate int) *ReqLimiter {
+type LimiterConfig struct {
+	TTL           time.Duration
+	CleanInterval time.Duration
+	Rate          int
+}
+
+// NewReqLimiter create new instance of ReqLimiter.
+func NewReqLimiter(cfg LimiterConfig) *ReqLimiter {
 	limiter := &ReqLimiter{
-		ttl:   limiterTTL,
-		rate:  reqRate,
+		ttl:   cfg.TTL,
+		rate:  cfg.Rate,
 		items: make(map[string]*limiterInfo),
 		mu:    sync.Mutex{},
 	}
 	go func() {
-		for range time.Tick(limiterCleanInterval * time.Second) {
-			limiter.Clean()
+		for range time.Tick(cfg.CleanInterval) {
+			limiter.clean()
 		}
 	}()
 	return limiter
 }
 
+// NewLimiterConfig create default limiter configuration.
+func NewLimiterConfig(rate int) LimiterConfig {
+	return LimiterConfig{
+		Rate:          rate,
+		TTL:           limiterTTL,
+		CleanInterval: limiterCleanInterval * time.Second,
+	}
+}
+
+// Allow check allow or not action by limits.
 func (r *ReqLimiter) Allow(key string) bool {
 	li := r.getOrCreateLimiter(key)
 	return li.Allow()
@@ -59,7 +76,22 @@ func (r *ReqLimiter) getOrCreateLimiter(key string) *limiterInfo {
 	return li
 }
 
-func (r *ReqLimiter) Clean() {
+// Remove remove bucket.
+func (r *ReqLimiter) Remove(key string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.items, key)
+}
+
+// Allow check allow or not action by limits.
+func (l *limiterInfo) Allow() bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.LastAccess = time.Now().Unix()
+	return l.Limiter.Allow()
+}
+
+func (r *ReqLimiter) clean() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	expire := time.Now().Unix() - int64(r.ttl)
@@ -70,15 +102,9 @@ func (r *ReqLimiter) Clean() {
 	}
 }
 
-func (r *ReqLimiter) Remove(key string) {
+func (r *ReqLimiter) HasKey(key string) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	delete(r.items, key)
-}
-
-func (l *limiterInfo) Allow() bool {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.LastAccess = time.Now().Unix()
-	return l.Limiter.Allow()
+	_, ok := r.items[key]
+	return ok
 }

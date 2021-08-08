@@ -26,10 +26,19 @@ version: build
 	$(BIN) version
 
 test:
-	go test -race ./app/...
+	go test ./app/...
+
+test-int:
+	go test -race -tags integration -race ./app/...
+
+test-int-coverage:
+	go test -race -tags integration -race ./app/... `go list ./app/... | grep -v examples` -coverprofile=coverage.txt -covermode=atomic
 
 test-coverage:
 	go test -race ./app/... `go list ./app/... | grep -v examples` -coverprofile=coverage.txt -covermode=atomic
+
+test100:
+	go test -race -count 100 ./app/...
 
 lint:
 	golangci-lint run ./app/...
