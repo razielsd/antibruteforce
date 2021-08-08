@@ -101,3 +101,10 @@ func (r *ReqLimiter) clean() {
 		}
 	}
 }
+
+func (r *ReqLimiter) HasKey(key string) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	_, ok := r.items[key]
+	return ok
+}

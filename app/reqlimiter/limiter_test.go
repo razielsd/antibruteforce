@@ -50,16 +50,28 @@ func TestReqLimiter_Remove(t *testing.T) {
 }
 
 func TestReqLimiter_CleanByTimer(t *testing.T) {
+	key := "test"
 	cfg := NewLimiterConfig(2)
 	cfg.TTL = 1
 	cfg.CleanInterval = 1010 * time.Millisecond
 	reqLimiter := NewReqLimiter(cfg)
-	require.True(t, reqLimiter.Allow("test"))
-	_, ok := reqLimiter.items["test"]
-	require.True(t, ok)
+	require.True(t, reqLimiter.Allow(key))
+	require.True(t, reqLimiter.HasKey(key))
 	cond := func() bool {
-		_, ok := reqLimiter.items["test"]
-		return !ok
+		return reqLimiter.HasKey(key)
 	}
 	require.Eventually(t, cond, 5*time.Second, 100*time.Millisecond)
+}
+
+func TestReqLimiter_HasKey_Exists(t *testing.T) {
+	key := "test"
+	reqLimiter := NewReqLimiter(NewLimiterConfig(2))
+	require.True(t, reqLimiter.Allow(key))
+	require.True(t, reqLimiter.HasKey(key))
+}
+
+func TestReqLimiter_HasKey_NotExists(t *testing.T) {
+	key := "test"
+	reqLimiter := NewReqLimiter(NewLimiterConfig(2))
+	require.False(t, reqLimiter.HasKey(key))
 }
