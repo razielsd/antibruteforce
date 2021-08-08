@@ -52,14 +52,14 @@ func TestReqLimiter_Remove(t *testing.T) {
 func TestReqLimiter_CleanByTimer(t *testing.T) {
 	cfg := NewLimiterConfig(2)
 	cfg.TTL = 1
-	cfg.CleanInterval = 1200 * time.Millisecond
+	cfg.CleanInterval = 1010 * time.Millisecond
 	reqLimiter := NewReqLimiter(cfg)
 	require.True(t, reqLimiter.Allow("test"))
-	require.True(t, reqLimiter.Allow("test"))
-	require.False(t, reqLimiter.Allow("test"))
+	_, ok := reqLimiter.items["test"]
+	require.True(t, ok)
 	cond := func() bool {
 		_, ok := reqLimiter.items["test"]
-		return ok
+		return !ok
 	}
-	require.Eventually(t, cond, 3*time.Second, 1500*time.Millisecond)
+	require.Eventually(t, cond, 5*time.Second, 100*time.Millisecond)
 }
