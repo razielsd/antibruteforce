@@ -25,20 +25,35 @@ type limiterInfo struct {
 	mu         sync.Mutex
 }
 
+type LimiterConfig struct {
+	TTL           time.Duration
+	CleanInterval time.Duration
+	Rate          int
+}
+
 // NewReqLimiter create new instance of ReqLimiter.
-func NewReqLimiter(reqRate int) *ReqLimiter {
+func NewReqLimiter(cfg LimiterConfig) *ReqLimiter {
 	limiter := &ReqLimiter{
-		ttl:   limiterTTL,
-		rate:  reqRate,
+		ttl:   cfg.TTL,
+		rate:  cfg.Rate,
 		items: make(map[string]*limiterInfo),
 		mu:    sync.Mutex{},
 	}
 	go func() {
-		for range time.Tick(limiterCleanInterval * time.Second) {
+		for range time.Tick(cfg.CleanInterval) {
 			limiter.clean()
 		}
 	}()
 	return limiter
+}
+
+// NewLimiterConfig create default limiter configuration.
+func NewLimiterConfig(rate int) LimiterConfig {
+	return LimiterConfig{
+		Rate:          rate,
+		TTL:           limiterTTL,
+		CleanInterval: limiterCleanInterval * time.Second,
+	}
 }
 
 // Allow check allow or not action by limits.

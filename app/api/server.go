@@ -37,9 +37,9 @@ func NewAbfAPI(cfg config.AppConfig, logger *zap.Logger) (*AbfAPI, error) {
 	api := &AbfAPI{
 		cfg:          cfg,
 		log:          logger,
-		loginLimiter: reqlimiter.NewReqLimiter(cfg.RateLogin),
-		pwdLimiter:   reqlimiter.NewReqLimiter(cfg.RatePwd),
-		ipLimiter:    reqlimiter.NewReqLimiter(cfg.RateIP),
+		loginLimiter: reqlimiter.NewReqLimiter(reqlimiter.NewLimiterConfig(cfg.RateLogin)),
+		pwdLimiter:   reqlimiter.NewReqLimiter(reqlimiter.NewLimiterConfig(cfg.RatePwd)),
+		ipLimiter:    reqlimiter.NewReqLimiter(reqlimiter.NewLimiterConfig(cfg.RateIP)),
 		whitelist:    iptable.NewIPTable(),
 		blacklist:    iptable.NewIPTable(),
 	}
