@@ -91,7 +91,7 @@ func TestApiClient_UpdateRemove_Success(t *testing.T) {
 func TestSendUpdate_ErrorResponse(t *testing.T) {
 	resp := api.ErrorResponse{
 		ErrMessage: "was error here",
-		Code: 1,
+		Code:       1,
 	}
 	mock := newAPIClientMock(http.StatusBadRequest, resp.JSON(), nil)
 	client := newClientAPI(testHost)
@@ -108,5 +108,4 @@ func TestSendUpdate_ResponseWithBadData(t *testing.T) {
 	client.setHTTPClient(mock)
 	err := client.sendUpdate("/api/blacklist/add", "ip", "10.20.30.40")
 	require.Error(t, err)
-
 }
