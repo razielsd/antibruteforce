@@ -94,6 +94,7 @@ func (a *IPTable) GetAll() []string {
 	return ips
 }
 
+// Remove remove ip or mask from table.
 func (a *IPTable) Remove(ipOrMask string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()

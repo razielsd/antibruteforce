@@ -4,13 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/razielsd/antibruteforce/app/config"
-	"github.com/razielsd/antibruteforce/app/logger"
 )
 
 const testAPIRate = 2
@@ -230,23 +226,4 @@ func TestAllowResult_Build_CanAuthFail(t *testing.T) {
 			require.False(t, test.res.CanAuth)
 		})
 	}
-}
-
-func createServer() *AbfAPI {
-	cfg := config.AppConfig{}
-	cfg.RateLogin = testAPIRate
-	cfg.RatePwd = testAPIRate
-	cfg.RateIP = testAPIRate
-
-	l, _ := logger.GetLogger(cfg)
-	api, _ := NewAbfAPI(cfg, l)
-	return api
-}
-
-func createAllowParam(login, pwd, ip string) string {
-	data := url.Values{}
-	data.Set("login", login)
-	data.Set("pwd", pwd)
-	data.Set("ip", ip)
-	return data.Encode()
 }

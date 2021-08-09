@@ -10,8 +10,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/razielsd/antibruteforce/app/api"
 	"github.com/stretchr/testify/require"
+
+	"github.com/razielsd/antibruteforce/app/api"
 )
 
 const testHost = "127.0.0.1:51215"
