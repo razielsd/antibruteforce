@@ -11,6 +11,18 @@
 Предполагается, что сервис используется только для server-server, т.е. скрыт от конечного пользователя.
 
 ## API
+ * _/api/user/allow_ - проверка возможности авторизации
+ * _/api/whitelist_ - получить белый список  IP адресов или адрес подсети
+ * _/api/whitelist/add_ - добавить в белый список IP или адрес подсети
+ * _/api/whitelist/remove_ - удалить из белого списка IP или адрес подсети
+ * _/api/blacklist_ - получить черный список  IP адресов или адрес подсети
+ * _/api/blacklist/add_ - добавить в черный список IP или адрес подсети
+ * _/api/blacklist/remove_ - удалить из черного списка IP или адрес подсети
+ * _/api/bucket/drop/login_ - удалить логин из бакета (сбросить счетчик авторизаций для данного логина)
+ * _/api/bucket/drop/pwd_ - удалить пароль из бакета
+ * _/api/bucket/drop/ip_ - удалить IP из бакета
+
+Подробнее в [swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/razielsd/antibruteforce/master/doc/swagger.yml)
 
 ##  Мониторинг
 API содержит несколько методов для мониторинга приложения:
