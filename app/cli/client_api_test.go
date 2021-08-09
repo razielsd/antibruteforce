@@ -1,15 +1,9 @@
-// +build integration
-
 package cli
 
 import (
-	"context"
-	"encoding/json"
 	"net/http"
 	"testing"
-	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
 
 	"github.com/razielsd/antibruteforce/app/api"
@@ -17,123 +11,79 @@ import (
 
 const testHost = "127.0.0.1:51215"
 
-func TestClientAPI_GetBlacklist(t *testing.T) {
-	expectedIP := []string{"192.168.1.71", "10.1.10.0/24"}
-	cancel := startTestServer(
-		t,
-		map[string]api.SuccessResponse{"/api/blacklist": {Result: expectedIP}},
-	)
-	defer cancel()
+func TestApiClient_GetWhitelist(t *testing.T) {
+	expIps := []string{"192.168.1.71", "10.10.1.15"}
+	resp := api.SuccessResponse{Result: expIps}
+	mock := newAPIClientMock(http.StatusOK, resp.JSON(), nil)
 	client := newClientAPI(testHost)
-	ips, err := client.getBlacklist()
-	require.NoError(t, err)
-	require.Equal(t, expectedIP, ips)
-}
-
-func TestClientAPI_GetWhitelist(t *testing.T) {
-	expectedIP := []string{"192.168.1.71", "10.1.10.0/24"}
-	cancel := startTestServer(
-		t,
-		map[string]api.SuccessResponse{"/api/whitelist": {Result: expectedIP}},
-	)
-	defer cancel()
-	client := newClientAPI(testHost)
+	client.setHTTPClient(mock)
 	ips, err := client.getWhitelist()
 	require.NoError(t, err)
-	require.Equal(t, expectedIP, ips)
+	require.Equal(t, expIps, ips)
 }
 
-func TestModifyBWList(t *testing.T) {
+func TestApiClient_GetBlacklist(t *testing.T) {
+	expIps := []string{"192.168.1.72", "10.10.1.151"}
+	resp := api.SuccessResponse{Result: expIps}
+	mock := newAPIClientMock(http.StatusOK, resp.JSON(), nil)
 	client := newClientAPI(testHost)
+	client.setHTTPClient(mock)
+	ips, err := client.getBlacklist()
+	require.NoError(t, err)
+	require.Equal(t, expIps, ips)
+}
 
+func TestApiClient_UpdateRemove_Success(t *testing.T) {
+	ip := "172.168.10.5"
 	tests := []struct {
-		name    string
-		uri     string
-		handler func(clientIP string) error
+		name string
+		resp api.SuccessResponse
+		exp  interface{}
+		call func(c *clientAPI) error
 	}{
 		{
-			name:    "add whitelist",
-			uri:     "/api/whitelist/add",
-			handler: client.appendWhitelist,
+			name: "Add blacklist",
+			resp: api.SuccessResponse{Result: api.NewSuccessOK()},
+			call: func(c *clientAPI) error { return c.appendBlacklist(ip) },
 		},
 		{
-			name:    "remove whitelist",
-			uri:     "/api/whitelist/remove",
-			handler: client.removeWhitelist,
+			name: "Remove blacklist",
+			resp: api.SuccessResponse{Result: api.NewSuccessOK()},
+			call: func(c *clientAPI) error { return c.removeBlacklist(ip) },
 		},
 		{
-			name:    "add blacklist",
-			uri:     "/api/blacklist/add",
-			handler: client.appendBlacklist,
+			name: "Add whitelist",
+			resp: api.SuccessResponse{Result: api.NewSuccessOK()},
+			call: func(c *clientAPI) error { return c.appendWhitelist(ip) },
 		},
 		{
-			name:    "remove blacklist",
-			uri:     "/api/blacklist/remove",
-			handler: client.removeBlacklist,
+			name: "Remove whitelist",
+			resp: api.SuccessResponse{Result: api.NewSuccessOK()},
+			call: func(c *clientAPI) error { return c.removeWhitelist(ip) },
 		},
 		{
-			name:    "drop bucket by login",
-			uri:     "/api/bucket/drop/login",
-			handler: client.dropBucketByLogin,
+			name: "Drop bucket login",
+			resp: api.SuccessResponse{Result: api.NewSuccessOK()},
+			call: func(c *clientAPI) error { return c.dropBucketByLogin("Ivan") },
 		},
 		{
-			name:    "drop bucket by password",
-			uri:     "/api/bucket/drop/pwd",
-			handler: client.dropBucketByPasswd,
+			name: "Drop bucket pwd",
+			resp: api.SuccessResponse{Result: api.NewSuccessOK()},
+			call: func(c *clientAPI) error { return c.dropBucketByPasswd("123456") },
 		},
 		{
-			name:    "drop bucket by ip",
-			uri:     "/api/bucket/drop/ip",
-			handler: client.dropBucketByIP,
+			name: "Drop bucket IP",
+			resp: api.SuccessResponse{Result: api.NewSuccessOK()},
+			call: func(c *clientAPI) error { return c.dropBucketByIP(ip) },
 		},
 	}
-
-	handlers := make(map[string]api.SuccessResponse)
-
-	for _, test := range tests {
-		handlers[test.uri] = api.SuccessResponse{
-			Result: api.NewSuccessOK(),
-		}
-	}
-	cancel := startTestServer(t, handlers)
-	defer cancel()
-
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			err := test.handler("192.168.1.99")
+			mock := newAPIClientMock(http.StatusOK, test.resp.JSON(), nil)
+			client := newClientAPI(testHost)
+			client.setHTTPClient(mock)
+			err := test.call(client)
 			require.NoError(t, err)
 		})
 	}
-}
-
-func startTestServer(t *testing.T, handlers map[string]api.SuccessResponse) context.CancelFunc {
-	r := mux.NewRouter()
-	for path := range handlers {
-		handler := func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			err := json.NewEncoder(w).Encode(handlers[r.RequestURI])
-			require.NoError(t, err)
-		}
-		r.HandleFunc(path, handler)
-	}
-	srv := http.Server{
-		Addr:    testHost,
-		Handler: r,
-	}
-	ctx, cancel := context.WithCancel(context.Background())
-	go srv.ListenAndServe()
-	go func() {
-		<-ctx.Done()
-		st, stCancel := context.WithTimeout(context.Background(), time.Second)
-		defer stCancel()
-		srv.Shutdown(st)
-	}()
-	return cancel
-}
-
-func stopTestServer(t *testing.T, srv http.Server) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	err := srv.Shutdown(ctx)
-	require.NoError(t, err)
 }

@@ -18,25 +18,9 @@ func TestNewCli(t *testing.T) {
 	require.NotNil(t, appCli)
 }
 
-func TestCli_ShowWhitelist(t *testing.T) {
-	cfg := config.AppConfig{Addr: "0.0.0.0:8081"}
-	ips := []string{"192.168.1.71", "10.10.1.15"}
-	expResp := api.SuccessResponse{
-		Result: ips,
-	}
-	expTxt := "--=== Whitelist ===--\n" + strings.Join(ips, "\n") + "\n"
-	mock := newAPIClientMock(http.StatusOK, expResp.JSON(), nil)
-	appCli := NewCli(cfg)
-	appCli.client.setHTTPClient(mock)
-	require.NotNil(t, appCli)
-	txt, err := appCli.ShowWhitelist()
-	require.NoError(t, err)
-	require.Equal(t, expTxt, txt)
-}
-
 func TestCli_Success(t *testing.T) {
 	ips := []string{"192.168.1.71", "10.10.1.15"}
-	ip := "172.168.10.5"
+	ip := "172.168.10.51"
 	cfg := config.AppConfig{Addr: "0.0.0.0:8081"}
 	appCli := NewCli(cfg)
 
