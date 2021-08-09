@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const testHost = "127.0.0.1:51213"
+const testHost = "127.0.0.1:51215"
 
 func TestClientAPI_GetBlacklist(t *testing.T) {
 	expectedIP := []string{"192.168.1.71", "10.1.10.0/24"}
