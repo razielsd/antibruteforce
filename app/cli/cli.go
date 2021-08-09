@@ -21,16 +21,16 @@ func NewCli(cfg config.AppConfig) *Cli {
 
 // ShowWhitelist show whitelist.
 func (c *Cli) ShowWhitelist() (string, error) {
-	l, err := c.client.GetWhitelist()
+	l, err := c.client.getWhitelist()
 	if err != nil {
-		return "", fmt.Errorf("%w: unable get blacklist", err)
+		return "", fmt.Errorf("%w: unable get whitelist", err)
 	}
 	return c.drawList("Whitelist", l), nil
 }
 
 // ShowBlacklist show blacklist.
 func (c *Cli) ShowBlacklist() (string, error) {
-	l, err := c.client.GetBlacklist()
+	l, err := c.client.getBlacklist()
 	if err != nil {
 		return "", fmt.Errorf("%w: unable get blacklist", err)
 	}

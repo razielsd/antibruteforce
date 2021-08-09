@@ -12,21 +12,26 @@
 
 ## API
 
+##  Мониторинг
+API содержит несколько методов для мониторинга приложения:
+ * _/mertics_ - метрики приложения для prometheus
+ * _/health/liveness_ - k8s liveness probe
+ * _/health/readiness_ - k8s readiness probe
+
 ## CLI
 Usage:
 ```antibruteforce [command]```
 
- * Available Commands:
- * blacklist   Show blacklist
- * bucket      Drop bucket by login, password or ip
- * completion  generate the autocompletion script for the specified shell
- * help        Help about any command
- * server      Run service
- * version     Show version
- * whitelist   Show whitelist
+* Available Commands:
+* blacklist   Show blacklist
+* bucket      Drop bucket by login, password or ip
+* completion  generate the autocompletion script for the specified shell
+* help        Help about any command
+* server      Run service
+* version     Show version
+* whitelist   Show whitelist
 
-##  Мониторинг
-Сервис позволяет собирать метрики для prometheus по адресу: _/mertics_
+
 
 ## Алгоритм работы
 Сервис ограничивает частоту попыток авторизации для различных комбинаций параметров, например:

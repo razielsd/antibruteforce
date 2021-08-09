@@ -24,7 +24,7 @@ func TestClientAPI_GetBlacklist(t *testing.T) {
 	)
 	defer cancel()
 	client := newClientAPI(testHost)
-	ips, err := client.GetBlacklist()
+	ips, err := client.getBlacklist()
 	require.NoError(t, err)
 	require.Equal(t, expectedIP, ips)
 }
@@ -37,7 +37,7 @@ func TestClientAPI_GetWhitelist(t *testing.T) {
 	)
 	defer cancel()
 	client := newClientAPI(testHost)
-	ips, err := client.GetWhitelist()
+	ips, err := client.getWhitelist()
 	require.NoError(t, err)
 	require.Equal(t, expectedIP, ips)
 }

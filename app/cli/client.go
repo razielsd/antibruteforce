@@ -13,22 +13,38 @@ import (
 )
 
 type clientAPI struct {
-	Host string
+	Host       string
+	HTTPClient httpClient
+}
+
+type httpClient interface {
+	Do(req *http.Request) (*http.Response, error)
 }
 
 func newClientAPI(apiHost string) *clientAPI {
-	return &clientAPI{
+	client := &clientAPI{
 		Host: apiHost,
 	}
+	client.HTTPClient = client.createDefaultHTTPClient()
+	return client
 }
 
-func (c *clientAPI) getClient() http.Client {
-	return http.Client{
+func (c *clientAPI) createDefaultHTTPClient() httpClient {
+	z := &http.Client{
 		Transport: &http.Transport{
 			MaxIdleConns:    100,
 			IdleConnTimeout: 90 * time.Second,
 		},
 	}
+	return z
+}
+
+func (c *clientAPI) getHTTPClient() httpClient {
+	return c.HTTPClient
+}
+
+func (c *clientAPI) setHTTPClient(hc httpClient) {
+	c.HTTPClient = hc
 }
 
 func (c *clientAPI) makeURL(path string) string {
