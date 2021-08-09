@@ -8,24 +8,24 @@ import (
 	"net/http"
 )
 
-func (c *clientAPI) GetWhitelist() ([]string, error) {
+func (c *clientAPI) getWhitelist() ([]string, error) {
 	req, err := createGetRequest(c.makeURL("/api/whitelist"))
 	if err != nil {
 		return nil, err
 	}
-	return c.GetBWlist(req)
+	return c.getBWlist(req)
 }
 
-func (c *clientAPI) GetBlacklist() ([]string, error) {
+func (c *clientAPI) getBlacklist() ([]string, error) {
 	req, err := createGetRequest(c.makeURL("/api/blacklist"))
 	if err != nil {
 		return nil, err
 	}
-	return c.GetBWlist(req)
+	return c.getBWlist(req)
 }
 
-func (c *clientAPI) GetBWlist(req *http.Request) ([]string, error) {
-	client := c.getClient()
+func (c *clientAPI) getBWlist(req *http.Request) ([]string, error) {
+	client := c.getHTTPClient()
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,6 @@ func (c *clientAPI) GetBWlist(req *http.Request) ([]string, error) {
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +75,7 @@ func (c *clientAPI) dropBucketByIP(key string) error {
 }
 
 func (c *clientAPI) sendUpdate(path, paramName, value string) error {
-	client := c.getClient()
+	client := c.getHTTPClient()
 	req, err := c.createPostRequest(
 		c.makeURL(path),
 		map[string]string{paramName: value},

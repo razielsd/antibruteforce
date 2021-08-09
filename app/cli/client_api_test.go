@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const testHost = "127.0.0.1:51213"
+const testHost = "127.0.0.1:51215"
 
 func TestClientAPI_GetBlacklist(t *testing.T) {
 	expectedIP := []string{"192.168.1.71", "10.1.10.0/24"}
@@ -24,7 +24,7 @@ func TestClientAPI_GetBlacklist(t *testing.T) {
 	)
 	defer cancel()
 	client := newClientAPI(testHost)
-	ips, err := client.GetBlacklist()
+	ips, err := client.getBlacklist()
 	require.NoError(t, err)
 	require.Equal(t, expectedIP, ips)
 }
@@ -37,7 +37,7 @@ func TestClientAPI_GetWhitelist(t *testing.T) {
 	)
 	defer cancel()
 	client := newClientAPI(testHost)
-	ips, err := client.GetWhitelist()
+	ips, err := client.getWhitelist()
 	require.NoError(t, err)
 	require.Equal(t, expectedIP, ips)
 }
