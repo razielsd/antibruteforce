@@ -3,7 +3,6 @@ package cli
 import (
 	"bytes"
 	"fmt"
-	"text/tabwriter"
 
 	"github.com/razielsd/antibruteforce/app/config"
 )
@@ -38,20 +37,17 @@ func (c *Cli) ShowBlacklist() (string, error) {
 	return c.drawList("Blacklist", l), nil
 }
 
-func (c *Cli) drawList(title string, l map[string]bwItem) string {
+func (c *Cli) drawList(title string, l []string) string {
 	buf := bytes.NewBuffer([]byte{})
 
 	fmt.Fprintf(buf, "--=== %s ===--\n", title)
-	w := tabwriter.NewWriter(buf, 1, 0, 2, ' ', tabwriter.Debug)
-	_, _ = fmt.Fprintf(w, "%s\t %s\t %s\n", "IP/Mask", "Count", "LastAccess.")
-	for ip, stat := range l {
-		_, _ = fmt.Fprintf(w, "%s\t %d\t %s\n", ip, stat.Counter, "stat.LastAccess.")
+	for _, ip := range l {
+		_, _ = fmt.Fprintf(buf, "%s\n", ip)
 	}
 	if len(l) == 0 {
-		_, _ = fmt.Fprintln(w, "Empty")
+		_, _ = fmt.Fprintln(buf, "Empty")
 	}
 
-	w.Flush()
 	return buf.String()
 }
 

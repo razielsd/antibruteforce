@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (c *clientAPI) GetWhitelist() (map[string]bwItem, error) {
+func (c *clientAPI) GetWhitelist() ([]string, error) {
 	req, err := createGetRequest(c.makeURL("/api/whitelist"))
 	if err != nil {
 		return nil, err
@@ -16,7 +16,7 @@ func (c *clientAPI) GetWhitelist() (map[string]bwItem, error) {
 	return c.GetBWlist(req)
 }
 
-func (c *clientAPI) GetBlacklist() (map[string]bwItem, error) {
+func (c *clientAPI) GetBlacklist() ([]string, error) {
 	req, err := createGetRequest(c.makeURL("/api/blacklist"))
 	if err != nil {
 		return nil, err
@@ -24,8 +24,7 @@ func (c *clientAPI) GetBlacklist() (map[string]bwItem, error) {
 	return c.GetBWlist(req)
 }
 
-func (c *clientAPI) GetBWlist(req *http.Request) (map[string]bwItem, error) {
-	wl := make(map[string]bwItem)
+func (c *clientAPI) GetBWlist(req *http.Request) ([]string, error) {
 	client := c.getClient()
 	resp, err := client.Do(req)
 	if err != nil {
@@ -34,6 +33,7 @@ func (c *clientAPI) GetBWlist(req *http.Request) (map[string]bwItem, error) {
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(body))
 	if err != nil {
 		return nil, err
 	}
@@ -44,10 +44,7 @@ func (c *clientAPI) GetBWlist(req *http.Request) (map[string]bwItem, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: unable parse response", err)
 	}
-	for _, ip := range ips.Result {
-		wl[ip] = bwItem{}
-	}
-	return wl, nil
+	return ips.Result, nil
 }
 
 func (c *clientAPI) appendBlacklist(clientIP string) error {

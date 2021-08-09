@@ -22,11 +22,6 @@ func newClientAPI(apiHost string) *clientAPI {
 	}
 }
 
-type bwItem struct {
-	Counter    int
-	LastAccess time.Time
-}
-
 func (c *clientAPI) getClient() http.Client {
 	return http.Client{
 		Transport: &http.Transport{
