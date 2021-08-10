@@ -1,4 +1,4 @@
-# Сервис "Анти-брутфорс"
+# AntiBruteforce
 [![codecov](https://codecov.io/gh/razielsd/antibruteforce/branch/master/graph/badge.svg)](https://codecov.io/gh/razielsd/antibruteforce)
 [![Go Report Card](https://goreportcard.com/badge/github.com/razielsd/antibruteforce)](https://goreportcard.com/report/github.com/razielsd/antibruteforce)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/razielsd/antibruteforce)
@@ -49,9 +49,12 @@ whitelist   Show/add/remove whitelist
  * `make build-img` - собирает образ для докера
  * `make run` - запускает сервис локально
  * `make run-img` - запускает сервис в докере
+ * `make lint` - запуск линтера   
  * `make test` - запуск тестов, без интеграционных
  * `make test-int` - запуск тестов, включая интеграционные
- * `make lint` - запуск линтера
+ * `make test-e2e` - запуск e2e-тестов
+ * `make test-img`, `make test-int-img`, `make test-e2e-img` - те же тесты, но запускаются в докере.
+
 Также есть таргеты `test-int-coverage`, `test-coverage`, `test100` они используются для запуска на CI.
 
 ##  Конфигурация
@@ -82,3 +85,6 @@ whitelist   Show/add/remove whitelist
  * `make run-img` - запуск сервиса
 
 ## Тестирование
+ * Сервис покрыт тестами, core-функционал на 100%
+ * Есть "грязные" интеграционные тесты - в рамках теста поднимается сервер и тестируется логика работы.
+ * Есть "чистые" интеграционные тесты - проверяется, что все endpoint доступны, cli - работает. 
