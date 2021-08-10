@@ -12,22 +12,22 @@ import (
 // Validation errors.
 var (
 	ErrInvalidIpv4Address = errors.New("invalid ip address")
-	ErrInvalidIpv4Mask    = errors.New("invalid ip mask")
+	ErrInvalidIpv4Subnet  = errors.New("invalid ip subnet")
 )
 
-// IPTable Container for ip/mask.
+// IPTable Container for ip/subnet.
 type IPTable struct {
-	maskList map[string]*net.IPNet
-	ipList   map[string]struct{}
-	mu       sync.Mutex
+	subnetList map[string]*net.IPNet
+	ipList     map[string]struct{}
+	mu         sync.Mutex
 }
 
 // NewIPTable create new instance of IPTable.
 func NewIPTable() *IPTable {
 	return &IPTable{
-		maskList: make(map[string]*net.IPNet),
-		ipList:   make(map[string]struct{}),
-		mu:       sync.Mutex{},
+		subnetList: make(map[string]*net.IPNet),
+		ipList:     make(map[string]struct{}),
+		mu:         sync.Mutex{},
 	}
 }
 
@@ -43,30 +43,30 @@ func (a *IPTable) Contains(clientIP string) (bool, error) {
 	if _, ok := a.ipList[clientIP]; ok {
 		return true, nil
 	}
-	for _, mask := range a.maskList {
-		if mask.Contains(ip) {
+	for _, subnet := range a.subnetList {
+		if subnet.Contains(ip) {
 			return true, nil
 		}
 	}
 	return false, nil
 }
 
-// Add add ip or net mask.
-func (a *IPTable) Add(ipOrMask string) error {
-	if a.isMask(ipOrMask) {
-		return a.addMask(ipOrMask)
+// Add add ip or subnet.
+func (a *IPTable) Add(ipOrSubnet string) error {
+	if a.isSubnet(ipOrSubnet) {
+		return a.addSubnet(ipOrSubnet)
 	}
-	return a.addIP(ipOrMask)
+	return a.addIP(ipOrSubnet)
 }
 
-func (a *IPTable) addMask(netmask string) error {
-	_, mask, err := net.ParseCIDR(netmask)
+func (a *IPTable) addSubnet(subnet string) error {
+	_, cidr, err := net.ParseCIDR(subnet)
 	if err != nil {
-		return fmt.Errorf("%w: is not valid ipv4 mask %s,  %s", ErrInvalidIpv4Mask, netmask, err)
+		return fmt.Errorf("%w: is not valid ipv4 subnet %s,  %s", ErrInvalidIpv4Subnet, subnet, err)
 	}
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.maskList[netmask] = mask
+	a.subnetList[subnet] = cidr
 	return nil
 }
 
@@ -81,30 +81,30 @@ func (a *IPTable) addIP(clientIP string) error {
 	return nil
 }
 
-// GetAll get all registered ip or net mask.
+// GetAll get all registered ip or subnet.
 func (a *IPTable) GetAll() []string {
 	ips := []string{}
 	for ip := range a.ipList {
 		ips = append(ips, ip)
 	}
-	for mask := range a.maskList {
-		ips = append(ips, mask)
+	for subnet := range a.subnetList {
+		ips = append(ips, subnet)
 	}
 	sort.Strings(ips)
 	return ips
 }
 
-// Remove remove ip or mask from table.
-func (a *IPTable) Remove(ipOrMask string) {
+// Remove remove ip or subnet from table.
+func (a *IPTable) Remove(ipOrSubnet string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	if a.isMask(ipOrMask) {
-		delete(a.maskList, ipOrMask)
+	if a.isSubnet(ipOrSubnet) {
+		delete(a.subnetList, ipOrSubnet)
 	} else {
-		delete(a.ipList, ipOrMask)
+		delete(a.ipList, ipOrSubnet)
 	}
 }
 
-func (a *IPTable) isMask(ipOrMask string) bool {
-	return strings.Contains(ipOrMask, "/")
+func (a *IPTable) isSubnet(ipOrSubnet string) bool {
+	return strings.Contains(ipOrSubnet, "/")
 }

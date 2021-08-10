@@ -16,7 +16,7 @@ func GetLogger(appCfg config.AppConfig) (*zap.Logger, error) {
 	}
 	cfg := zap.Config{
 		Encoding:         "json",
-		Level:            zap.NewAtomicLevelAt(zapcore.DebugLevel),
+		Level:            logLevel,
 		OutputPaths:      []string{"stdout"},
 		ErrorOutputPaths: []string{"stdout"},
 		EncoderConfig: zapcore.EncoderConfig{

@@ -8,8 +8,8 @@ import (
 
 var rootBlacklistCmd = &cobra.Command{
 	Use:   "blacklist",
-	Short: "Show blacklist",
-	Long:  `Show service blacklist`,
+	Short: "Show/add/remove blacklist",
+	Long:  `Show/add/remove blacklist`,
 }
 
 var showBlacklistCmd = &cobra.Command{
@@ -22,24 +22,24 @@ var showBlacklistCmd = &cobra.Command{
 
 var appendBlacklistCmd = &cobra.Command{
 	Use:     "add",
-	Short:   "Add ip/mask to blacklist",
-	Long:    `Add ip/mask to blacklist`,
+	Short:   "Add ip/subnet to blacklist",
+	Long:    `Add ip/subnet to blacklist`,
 	Run:     addBlacklistExecute,
-	Example: "abf blacklist add <ip/mask>",
+	Example: "abf blacklist add <ip/subnet>",
 }
 
 var rmBlacklistCmd = &cobra.Command{
 	Use:     "rm",
-	Short:   "Remove ip/mask from blacklist",
-	Long:    `Remove ip/mask service blacklist`,
+	Short:   "Remove ip/subnet from blacklist",
+	Long:    `Remove ip/subnet service blacklist`,
 	Run:     rmBlacklistExecute,
-	Example: "abf blacklist rm <ip/mask>",
+	Example: "abf blacklist rm <ip/subnet>",
 }
 
 var rootWhitelistCmd = &cobra.Command{
 	Use:   "whitelist",
-	Short: "Show whitelist",
-	Long:  `Show service whitelist`,
+	Short: "Show/add/remove whitelist",
+	Long:  `Show/add/remove whitelist`,
 }
 
 var showWhitelistCmd = &cobra.Command{
@@ -52,18 +52,18 @@ var showWhitelistCmd = &cobra.Command{
 
 var appendWhitelistCmd = &cobra.Command{
 	Use:     "add",
-	Short:   "Add ip/mask to whitelist",
-	Long:    `Add ip/mask to whitelist`,
+	Short:   "Add ip/subnet to whitelist",
+	Long:    `Add ip/subnet to whitelist`,
 	Run:     addWhitelistExecute,
-	Example: "abf whitelist add <ip/mask>",
+	Example: "abf whitelist add <ip/subnet>",
 }
 
 var rmWhitelistCmd = &cobra.Command{
 	Use:     "rm",
-	Short:   "Remove ip/mask from whitelist",
-	Long:    `Remove ip/mask service whitelist`,
+	Short:   "Remove ip/subnet from whitelist",
+	Long:    `Remove ip/subnet service whitelist`,
 	Run:     rmWhitelistExecute,
-	Example: "abf whitelist rm <ip/mask>",
+	Example: "abf whitelist rm <ip/subnet>",
 }
 
 func init() {
@@ -85,14 +85,14 @@ func showBlacklistExecute(cmd *cobra.Command, args []string) {
 }
 
 func addBlacklistExecute(cmd *cobra.Command, args []string) {
-	ip := extractFirstArgOrDie(cmd, args, "Require ip/mask")
+	ip := extractFirstArgOrDie(cmd, args, "Require ip/subnet")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.AppendBlacklist(ip)
 	printCli(message, err)
 }
 
 func rmBlacklistExecute(cmd *cobra.Command, args []string) {
-	ip := extractFirstArgOrDie(cmd, args, "Require ip/mask")
+	ip := extractFirstArgOrDie(cmd, args, "Require ip/subnet")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.RemoveBlacklist(ip)
 	printCli(message, err)
@@ -105,14 +105,14 @@ func showWhitelistExecute(cmd *cobra.Command, args []string) {
 }
 
 func addWhitelistExecute(cmd *cobra.Command, args []string) {
-	ip := extractFirstArgOrDie(cmd, args, "Require ip/mask")
+	ip := extractFirstArgOrDie(cmd, args, "Require ip/subnet")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.AppendWhitelist(ip)
 	printCli(message, err)
 }
 
 func rmWhitelistExecute(cmd *cobra.Command, args []string) {
-	ip := extractFirstArgOrDie(cmd, args, "Require ip/mask")
+	ip := extractFirstArgOrDie(cmd, args, "Require ip/subnet")
 	cliClient := cli.NewCli(getConfigOrDie())
 	message, err := cliClient.RemoveWhitelist(ip)
 	printCli(message, err)
