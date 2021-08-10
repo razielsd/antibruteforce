@@ -24,17 +24,17 @@ func TestIpTable_Contains_Found(t *testing.T) {
 			search: "192.168.1.1",
 		},
 		{
-			name:   "single mask",
+			name:   "single subnet",
 			ips:    []string{"192.168.1.0/24"},
 			search: "192.168.1.1",
 		},
 		{
-			name:   "mask and ip(2)",
+			name:   "subnet and ip(2)",
 			ips:    []string{"192.168.1.0/24", "172.168.10.10", "172.168.10.12"},
 			search: "172.168.10.12",
 		},
 		{
-			name:   "mask(2) and ip",
+			name:   "subnet(2) and ip",
 			ips:    []string{"192.168.1.0/24", "172.168.10.0/16", "10.10.10.12"},
 			search: "172.168.10.12",
 		},
@@ -44,10 +44,10 @@ func TestIpTable_Contains_Found(t *testing.T) {
 			iptable := NewIPTable()
 			for _, ip := range test.ips {
 				err := iptable.Add(ip)
-				require.NoError(t, err, "Unable add ip/mask for test data")
+				require.NoError(t, err, "Unable add ip/subnet for test data")
 			}
 			found, err := iptable.Contains(test.search)
-			require.NoError(t, err, "Error on check ip/mask")
+			require.NoError(t, err, "Error on check ip/subnet")
 			require.True(t, found)
 		})
 	}
@@ -65,12 +65,12 @@ func TestIpTable_Contains_NotFound(t *testing.T) {
 			search: "192.168.1.1",
 		},
 		{
-			name:   "single mask",
+			name:   "single subnet",
 			ips:    []string{"192.168.1.0/24"},
 			search: "192.168.2.1",
 		},
 		{
-			name:   "mask and ip(2)",
+			name:   "subnet and ip(2)",
 			ips:    []string{"192.168.1.0/24", "172.168.10.10", "172.168.10.12"},
 			search: "10.10.10.12",
 		},
@@ -80,10 +80,10 @@ func TestIpTable_Contains_NotFound(t *testing.T) {
 			iptable := NewIPTable()
 			for _, ip := range test.ips {
 				err := iptable.Add(ip)
-				require.NoError(t, err, "Unable add ip/mask for test data")
+				require.NoError(t, err, "Unable add ip/subnet for test data")
 			}
 			found, err := iptable.Contains(test.search)
-			require.NoError(t, err, "Error on check ip/mask")
+			require.NoError(t, err, "Error on check ip/subnet")
 			require.False(t, found)
 		})
 	}
@@ -101,10 +101,10 @@ func TestIpTable_Add_InvalidIp(t *testing.T) {
 	require.ErrorIs(t, err, ErrInvalidIpv4Address)
 }
 
-func TestIpTable_Add_InvalidMask(t *testing.T) {
+func TestIpTable_Add_InvalidSubnet(t *testing.T) {
 	iptable := NewIPTable()
 	err := iptable.Add("192.168.1./50")
-	require.ErrorIs(t, err, ErrInvalidIpv4Mask)
+	require.ErrorIs(t, err, ErrInvalidIpv4Subnet)
 }
 
 func TestIPTable_GetAll_Empty(t *testing.T) {
@@ -130,7 +130,7 @@ func TestRemove_IP_Exists(t *testing.T) {
 		searchIP string
 	}{
 		{
-			name:     "remove mask",
+			name:     "remove subnet",
 			tableIP:  "10.10.1.0/24",
 			searchIP: "10.10.1.10",
 		},
@@ -166,7 +166,7 @@ func TestRemove_IP_NotExists(t *testing.T) {
 		searchIP string
 	}{
 		{
-			name:    "remove mask",
+			name:    "remove subnet",
 			tableIP: "10.10.1.0/24",
 		},
 		{

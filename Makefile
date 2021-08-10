@@ -9,9 +9,6 @@ LDFLAGS := -X 'github.com/razielsd/antibruteforce/app/cmd.version=develop' -X 'g
 build:
 	go build -v -o $(BIN) -ldflags "$(LDFLAGS)"
 
-run:
-	$(BIN) server
-
 build-img:
 	docker build \
 			--build-arg LDFLAGS="$(LDFLAGS)" \
@@ -19,8 +16,11 @@ build-img:
 			-t $(DOCKER_IMG) \
 			-f build/Dockerfile .
 
+run:
+	$(BIN) server
+
 run-img:
-	docker run --name=$(CONTAINER_NAME) -p $(ABF_PORT):$(ABF_PORT) --env ABF_ADDR="0.0.0.0:$(ABF_PORT)" $(DOCKER_IMG)
+	docker run --rm --name=$(CONTAINER_NAME) -p $(ABF_PORT):$(ABF_PORT) --env ABF_ADDR="0.0.0.0:$(ABF_PORT)" $(DOCKER_IMG)
 
 version: build
 	$(BIN) version

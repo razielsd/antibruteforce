@@ -13,8 +13,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "antibruteforce",
-	Short: "antibruteforce",
+	Use:   "abf",
+	Short: "abf",
 	Long:  `Antibruteforce service cli`,
 }
 

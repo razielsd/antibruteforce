@@ -51,7 +51,7 @@ func (c *Cli) drawList(title string, l []string) string {
 	return buf.String()
 }
 
-// AppendBlacklist add ip/mask to blacklist.
+// AppendBlacklist add ip/subnet to blacklist.
 func (c *Cli) AppendBlacklist(clientIP string) (string, error) {
 	err := c.client.appendBlacklist(clientIP)
 	if err != nil {
@@ -60,7 +60,7 @@ func (c *Cli) AppendBlacklist(clientIP string) (string, error) {
 	return "OK", nil
 }
 
-// AppendWhitelist add ip/mask to whitelist.
+// AppendWhitelist add ip/subnet to whitelist.
 func (c *Cli) AppendWhitelist(clientIP string) (string, error) {
 	err := c.client.appendWhitelist(clientIP)
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *Cli) AppendWhitelist(clientIP string) (string, error) {
 	return "OK", nil
 }
 
-// RemoveBlacklist remove ip/mask from blacklist.
+// RemoveBlacklist remove ip/subnet from blacklist.
 func (c *Cli) RemoveBlacklist(clientIP string) (string, error) {
 	err := c.client.removeBlacklist(clientIP)
 	if err != nil {
@@ -78,7 +78,7 @@ func (c *Cli) RemoveBlacklist(clientIP string) (string, error) {
 	return "OK", nil
 }
 
-// RemoveWhitelist - remove ip/mask from whitelist.
+// RemoveWhitelist - remove ip/subnet from whitelist.
 func (c *Cli) RemoveWhitelist(clientIP string) (string, error) {
 	err := c.client.removeWhitelist(clientIP)
 	if err != nil {

@@ -63,6 +63,16 @@ func TestReqLimiter_CleanByTimer(t *testing.T) {
 	require.Eventually(t, cond, 5*time.Second, 100*time.Millisecond)
 }
 
+func TestReqLimiter_TokenExpire(t *testing.T) {
+	cfg := NewLimiterConfig(2)
+	cfg.TTL = 1
+	reqLimiter := NewReqLimiter(cfg)
+	require.True(t, reqLimiter.Allow(testKey))
+	require.True(t, reqLimiter.Allow(testKey))
+	time.Sleep(cfg.TTL * time.Second)
+	require.True(t, reqLimiter.Allow(testKey))
+}
+
 func TestReqLimiter_HasKey_Exists(t *testing.T) {
 	reqLimiter := NewReqLimiter(NewLimiterConfig(2))
 	require.True(t, reqLimiter.Allow(testKey))
